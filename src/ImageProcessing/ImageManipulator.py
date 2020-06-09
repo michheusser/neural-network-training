@@ -178,190 +178,16 @@ class ImageManipulator:
         self.scale(xFieldsScaled,yFieldsScaled,scaleStroke)
         self.crop(xFieldsNetto,yFieldsNetto,True)
         self.addMargins(xMargin, yMargin)
-        #print("self.imageData.data.shape[1] = "+str(self.imageData.data.shape[1]) + ", self.imageData.data.shape[0] = "+str(self.imageData.data.shape[0]))
         return self.imageData
 
-    def rotate(self, angle, rotateStroke = False):
-        angleDeg = angle
+    def rotate(self, angle, rotateStroke = False,fit = False):
         angle = angle*2*math.pi/360
-        rotatedData = np.zeros(self.imageData.data.shape)
         shapeX = self.imageData.data.shape[1]
         shapeY = self.imageData.data.shape[0]
-        # IMPORTANT:
-        # 2*xMax = shapeX >= D*abs(cos(angle+angle0)) = D*abs(cos(angle)*cos(angle0)-sin(angle)*sin(angle0)) = D*abs(cos(angle)*shapeX/sqrt(shapeX**2 + shapeY**2)-sin(angle)*shapeY/sqrt(shapeX**2 + shapeY**2))
-        # 2*yMax = shapeY >= D*abs(sin(angle+angle0)) = D*abs(sin(angle)*cos(angle0)+cos(angle)*sin(angle0)) = D*abs(sin(angle)*shapeX/sqrt(shapeX**2 + shapeY**2)+cos(angle)*shapeY/sqrt(shapeX**2 + shapeY**2))
-        # ==> R <= shapeX/(2*abs(cos(angle)*shapeX/sqrt(shapeX**2 + shapeY**2)-sin(angle)*shapeY/sqrt(shapeX**2 + shapeY**2)))
-        # ==> R <= shapeY/(2*abs(sin(angle)*shapeX/sqrt(shapeX**2 + shapeY**2)+cos(angle)*shapeY/sqrt(shapeX**2 + shapeY**2)))
-        # D <= shapeX / abs(cosA*cosA0-sinA*sinA0)
-        # D <= shapeY / abs(sinA*cosA0+sinA0*cosA)
-        cosA0 = shapeX/(math.sqrt(shapeX**2+shapeY**2))
-        sinA0 = shapeY/(math.sqrt(shapeX**2+shapeY**2))
-        cosA = round(math.cos(angle),5)
-        sinA = round(math.sin(angle),5)
-
-        D = min(shapeX/abs(cosA*cosA0-sinA*sinA0),shapeY/abs(sinA*cosA0+sinA0*cosA))
-
-        #if (cosA*shapeX-cosA*shapeY==0):
-        #    R = shapeY/(2*abs(sinA*shapeX/math.sqrt(shapeX**2 + shapeY**2)+cosA*shapeY/math.sqrt(shapeX**2 + shapeY**2)))
-        #elif(sinA*shapeX+cosA*shapeY==0):
-        #    R = shapeX/(2*abs(cosA*shapeX/math.sqrt(shapeX**2 + shapeY**2)-sinA*shapeY/math.sqrt(shapeX**2 + shapeY**2)))
-        #else: 
-        #    R = min(shapeX/(2*abs(cosA*shapeX/math.sqrt(shapeX**2 + shapeY**2)-sinA*shapeY/math.sqrt(shapeX**2 + shapeY**2))),shapeY/(2*abs(sinA*shapeX/math.sqrt(shapeX**2 + shapeY**2)+cosA*shapeY/math.sqrt(shapeX**2 + shapeY**2))))
-
-        #R = min(shapeX/(2*abs(cosA*shapeX/math.sqrt(shapeX**2 + shapeY**2)-sinA*shapeY/math.sqrt(shapeX**2 + shapeY**2))),shapeY/(2*abs(sinA*shapeX/math.sqrt(shapeX**2 + shapeY**2)+cosA*shapeY/math.sqrt(shapeX**2 + shapeY**2))))
-
-        print("*********")
-        print("shapeX = " + str(shapeX) + ", shapeY = " + str(shapeY) + ", angleDeg = "+ str(angleDeg) + ", D = " + str(D))
-        print("*********")
-    
-        rotatedShapeX = math.floor(D*cosA0)
-        rotatedShapeY = math.floor(D*sinA0)
-
-        
-        self.scale(rotatedShapeX,rotatedShapeY,scaleStroke=rotateStroke)
-        print("rotatedShapeX = " + str(rotatedShapeX) + ", rotatedShapeY = " + str(rotatedShapeY) + ", angleDeg = "+ str(angleDeg) + ", D = " + str(D))
-        print("*********")
-        self.imageData.display()
-
-
-        #xCentre = math.floor((shapeX-1)/2)
-        #yCentre = math.floor((shapeY-1)/2)
-        #xCentreRotated = math.floor((rotatedShapeX-1)/2)
-        #yCentreRotated = math.floor((rotatedShapeY-1)/2)
-        xCentre = (shapeX-1)/2
-        yCentre = (shapeY-1)/2
-        xCentreRotated = (D*cosA0-1)/2
-        yCentreRotated = (D*sinA0-1)/2
-
-        for y in range(0,self.imageData.data.shape[0]):
-                for x in range(0,self.imageData.data.shape[1]):
-                    if(self.imageData.data[y][x]):
-                        # xRotated = math.floor((x-xCentreRotated)*cosA - (y-yCentreRotated)*sinA) + xCentre
-                        # yRotated = math.floor((x-xCentreRotated)*sinA + (y-yCentreRotated)*cosA) + yCentre
-                        #xRotated = math.floor((x-xCentreRotated)*cosA - (y-yCentreRotated)*sinA + xCentre)
-                        #yRotated = math.floor((x-xCentreRotated)*sinA + (y-yCentreRotated)*cosA + yCentre)
-                        
-                        xRotated = (x-xCentreRotated)*cosA - (y-yCentreRotated)*sinA + xCentre
-                        yRotated = (x-xCentreRotated)*sinA + (y-yCentreRotated)*cosA + yCentre
-                        #why not using any math.floor is this not working?
-                        if(xRotated-xCentre > 0):
-                            xRotated = math.floor(xRotated) + math.floor(xCentre)
-                        else:
-                            xRotated = math.ceil(xRotated) + math.floor(xCentre)
-                        if(yRotated-yCentre > 0):
-                            yRotated = math.floor(yRotated) + math.floor(yCentre)
-                        else:
-                            yRotated = math.ceil(yRotated) + math.floor(yCentre)
-                        
-
-                        rotatedData[yRotated][xRotated] = self.imageData.data[y][x]
-                        if yRotated < 0 or xRotated< 0:
-                            print("found")
-        self.imageData.data = rotatedData
-        return self.imageData
-
-    def rotate2(self, angle, rotateStroke = False):
-        angleDeg = angle
-        angle = angle*2*math.pi/360
-        rotatedData = np.zeros(self.imageData.data.shape)
-        shapeX = self.imageData.data.shape[1]
-        shapeY = self.imageData.data.shape[0]
-        
-        cosA0 = shapeX/(math.sqrt(shapeX**2+shapeY**2))
-        sinA0 = shapeY/(math.sqrt(shapeX**2+shapeY**2))
-        cosA1 = -cosA0
-        sinA1 = sinA0
-        cosA = round(math.cos(angle),5)
-        sinA = round(math.sin(angle),5)
-    
-        D = min(shapeX/abs(cosA*cosA0-sinA*sinA0),shapeY/abs(sinA*cosA0+sinA0*cosA), shapeX/abs(cosA*cosA1-sinA*sinA1),shapeY/abs(sinA*cosA1+sinA1*cosA))
-        rotatedShapeX = math.floor(D*cosA0)
-        rotatedShapeY = math.floor(D*sinA0)
-        self.scale(rotatedShapeX,rotatedShapeY,scaleStroke=rotateStroke)
-        self.imageData.display()
-
-        xCentre = (shapeX-1)/2
-        yCentre = (shapeY-1)/2
-        xCentreRotated = (rotatedShapeX-1)/2
-        yCentreRotated = (rotatedShapeY-1)/2
-
-        print("*********")
-        print("angleDeg = "+ str(angleDeg) + ", D = " + str(D))
-        print("shapeX = " + str(shapeX) + ", shapeY = " + str(shapeY))
-        print("rotatedShapeX = " + str(rotatedShapeX) + ", rotatedShapeY = " + str(rotatedShapeY))
-        print("*********")
-
-        for y in range(0,self.imageData.data.shape[0]):
-            for x in range(0,self.imageData.data.shape[1]):
-                if(self.imageData.data[y][x]):
-                    xRotated = math.floor((x-xCentreRotated)*cosA - (y-yCentreRotated)*sinA + xCentre)
-                    yRotated = math.floor((x-xCentreRotated)*sinA + (y-yCentreRotated)*cosA + yCentre)
-
-                    rotatedData[yRotated][xRotated] = self.imageData.data[y][x]
-                    if yRotated < 0 or xRotated< 0:
-                        print("found")
-        self.imageData.data = rotatedData
-        return self.imageData
-
-    def rotate3(self, angle, rotateStroke = False):
-        angleDeg = angle
-        angle = angle*2*math.pi/360
-        
-        shapeX = self.imageData.data.shape[1]
-        shapeY = self.imageData.data.shape[0]
-        
-        cosA0 = (shapeX-1)/(math.sqrt((shapeX-1)**2+(shapeY-1)**2))
-        angle0deg = math.acos(cosA0)*360/(2*math.pi)
-        sinA0 = (shapeY-1)/(math.sqrt((shapeX-1)**2+(shapeY-1)**2))
-        cosA1 = -cosA0
-        angle1deg = math.acos(cosA1)*360/(2*math.pi)
-        sinA1 = sinA0
-        cosA = round(math.cos(angle),5)
-        sinA = round(math.sin(angle),5)
-        D = math.sqrt((shapeX-1)**2+(shapeY-1)**2)
-    
-        rotatedMaxX = max(D*abs(cosA*cosA0-sinA*sinA0),D*abs(cosA*cosA1-sinA*sinA1))
-        rotatedMaxY = max(D*abs(sinA*cosA0+sinA0*cosA),D*abs(sinA*cosA1+sinA1*cosA))
-
-        rotatedCornerX = D*(cosA*cosA0-sinA*sinA0)
-        rotatedCornerY = D*(sinA*cosA0+sinA0*cosA)
-
-        rotatedShapeX = math.floor(maxX)
-        rotatedShapeY = math.floor(maxY)
-        rotatedData = np.zeros((rotatedShapeY,rotatedShapeX))
-
-        xCentre = (shapeX-1)/2
-        yCentre = (shapeY-1)/2
-        xCentreRotated = (maxX-1)/2
-        yCentreRotated = (maxY-1)/2
-
-        for y in range(0,shapeY):
-            for x in range(0,shapeX):
-                if(self.imageData.data[y][x]):
-                    
-                    xRotated = math.floor((x-xCentre)*cosA - (y-yCentre)*sinA + xCentreRotated)
-                    yRotated = math.floor((x-xCentre)*sinA + (y-yCentre)*cosA + yCentreRotated)
-                    rotatedData[yRotated][xRotated] = self.imageData.data[y][x]
-        self.imageData.data = rotatedData
-        return self.imageData
-
-    def rotate4(self, angle, rotateStroke = False):
-        angleDeg = angle
-        angle = angle*2*math.pi/360
-        
-        shapeX = self.imageData.data.shape[1]
-        shapeY = self.imageData.data.shape[0]
-        
         cosA0 = (shapeX-1)/(math.sqrt((shapeX-1)**2+(shapeY-1)**2))
         sinA0 = (shapeY-1)/(math.sqrt((shapeX-1)**2+(shapeY-1)**2))
         cosA = round(math.cos(angle),5)
         sinA = round(math.sin(angle),5)
-        #angle0deg = math.acos(cosA0)*360/(2*math.pi)
-        #D = math.sqrt((shapeX-1)**2+(shapeY-1)**2)
-
-        #rotatedCornerX = math.ceil(D*(cosA*cosA0-sinA*sinA0)) if D*(cosA*cosA0-sinA*sinA0) > 0 else math.floor(D*(cosA*cosA0-sinA*sinA0))
-        #rotatedCornerY = math.ceil(D*(sinA*cosA0+sinA0*cosA)) if D*(sinA*cosA0+sinA0*cosA) > 0 else math.floor(D*(sinA*cosA0+sinA0*cosA))
-
         xRotatedList = []
         yRotatedList = []
         for y in range(0,shapeY):
@@ -370,19 +196,24 @@ class ImageManipulator:
                     yRotated = math.ceil(x*sinA + y*cosA) if x*sinA + y*cosA > 0 else math.floor(x*sinA + y*cosA) 
                     xRotatedList.append(xRotated)
                     yRotatedList.append(yRotated)
-        xRotatedMin = min(xRotatedList)
-        yRotatedMin = min(yRotatedList)
-        xRotatedMax = max(xRotatedList)
-        yRotatedMax = max(yRotatedList)
-        rotatedData = np.zeros((yRotatedMax-yRotatedMin+1,xRotatedMax-xRotatedMin+1))
+        rotatedData = np.zeros((max(yRotatedList)-min(yRotatedList)+1,max(xRotatedList)-min(xRotatedList)+1))
         
         for y in range(0,shapeY):
             for x in range(0,shapeX):
-                #if(self.imageData.data[y][x]):
-                    xRotated = math.ceil(x*cosA - y*sinA) if x*cosA - y*sinA > 0 else math.floor(x*cosA - y*sinA)
-                    yRotated = math.ceil(x*sinA + y*cosA) if x*sinA + y*cosA > 0 else math.floor(x*sinA + y*cosA) 
-                    xRotated -= xRotatedMin
-                    yRotated -= yRotatedMin
+                if(not rotateStroke or self.imageData.data[y][x]):
+                    xRotated = math.ceil(x*cosA - y*sinA) -min(xRotatedList) if x*cosA - y*sinA > 0 else math.floor(x*cosA - y*sinA) -min(xRotatedList)
+                    yRotated = math.ceil(x*sinA + y*cosA) -min(yRotatedList) if x*sinA + y*cosA > 0 else math.floor(x*sinA + y*cosA) -min(yRotatedList)
                     rotatedData[yRotated][xRotated] = self.imageData.data[y][x]
+
         self.imageData.data = rotatedData
+        if fit:
+            self.fit(xFields = shapeX,yFields = shapeY,xMargin = 0, yMargin = 0,keepRatio=True,scaleStroke = rotateStroke)
         return self.imageData
+
+    def filledPixels(self,array2D):
+        counter=0
+        for y in range(0,array2D.shape[0]):
+            for x in range(0,array2D.shape[1]):
+                counter = counter+1 if array2D[y][x] else counter
+        print("Filled pixels = " + str(counter))
+        return counter

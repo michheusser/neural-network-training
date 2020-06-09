@@ -2,10 +2,8 @@ from ImageProcessing.ImageData import ImageData
 from ImageProcessing.ImageProcessor import ImageProcessor
 import numpy as np
 
-
-
-path = "/Users/michelsmacbookpro/Library/Mobile Documents/com~apple~CloudDocs/Symbol-Calculator/src/test.jpg"
-path2 = "/Users/michelsmacbookpro/Library/Mobile Documents/com~apple~CloudDocs/Symbol-Calculator/src/test2.jpg"
+path = "/Users/michelsmacbookpro/Desktop/Projects/neural-network-training/src/test.jpg"
+path2 = "/Users/michelsmacbookpro/Desktop/Projects/neural-network-training/src/test2.jpg"
 #image = ImageData().loadImage(path).display().manipulator.shift(-10,-10).display().manipulator.align().display()
 #image = ImageData().loadImage(path).display().manipulator.addMargins(20,20).display().manipulator.wrap(3,3).display().manipulator.scale(50,50).display()
 #image = ImageData().loadImage(path).display().manipulator.addMargins(0,0).display().manipulator.scale(10,10).display()
@@ -57,4 +55,4 @@ path2 = "/Users/michelsmacbookpro/Library/Mobile Documents/com~apple~CloudDocs/S
 #image = ImageData(np.array([[1,1,1,0,1,1,1]])).manipulator.addMargins(0,0).display().manipulator.rotate4(120).display()
 #image = ImageData(np.array([[0,1]])).manipulator.addMargins(0,0).display().manipulator.rotate4(-225).display()
 
-image = ImageData().loadImage(path2).manipulator.wrap().manipulator.fit(xFields=50,yFields=200,xMargin=0,yMargin=0,keepRatio=True,scaleStroke=True).manipulator.wrap().display().manipulator.rotate4(45).display()
+image = ImageData().loadImage(path2).manipulator.wrap().display().manipulator.rotate(10,True,True).display()

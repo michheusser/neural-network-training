@@ -29,14 +29,6 @@ class ImageProcessor:
         print("Total Datapoints: " + str(dataPointsNow))
         return self
 
-    def iterateFolder(self,sourcePath):
-        os.chdir(sourcePath)
-        files = os.scandir()
-        for file in files:
-            print(file.name)
-            #print(file.path.endswith(".jpg"))
-        return self
-
     def processImageData(self,imageData):
         return imageData.manipulator.fit(xFields=28, yFields=28, xMargin = 0, yMargin = 0, keepRatio = True,scaleStroke=True)
 
@@ -95,5 +87,7 @@ class ImageProcessor:
             axs[i%x,math.floor(i/x)].get_xaxis().set_visible(False)
             axs[i%x,math.floor(i/x)].get_yaxis().set_visible(False)
         plt.show()
+    
+    
 
     
