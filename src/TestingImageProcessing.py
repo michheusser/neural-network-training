@@ -55,4 +55,6 @@ path2 = "/Users/michelsmacbookpro/Desktop/Projects/neural-network-training/src/t
 #image = ImageData(np.array([[1,1,1,0,1,1,1]])).manipulator.addMargins(0,0).display().manipulator.rotate4(120).display()
 #image = ImageData(np.array([[0,1]])).manipulator.addMargins(0,0).display().manipulator.rotate4(-225).display()
 
-image = ImageData().loadImage(path2).manipulator.wrap().display().manipulator.rotate(10,True,True).display()
+#image = ImageData().loadImage(path2).display().manipulator.rotate(15,True,True).display()
+image = ImageData().loadImage(path2).manipulator.rotate(15,True,True)
+

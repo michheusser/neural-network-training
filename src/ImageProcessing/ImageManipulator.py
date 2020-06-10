@@ -180,14 +180,18 @@ class ImageManipulator:
         self.addMargins(xMargin, yMargin)
         return self.imageData
 
+    def _round(self,x,n):
+        return int(x*10**n + 0.5 * math.copysign(1,x))*10**(-n)
+        
     def rotate(self, angle, rotateStroke = False,fit = False):
         angle = angle*2*math.pi/360
         shapeX = self.imageData.data.shape[1]
         shapeY = self.imageData.data.shape[0]
         cosA0 = (shapeX-1)/(math.sqrt((shapeX-1)**2+(shapeY-1)**2))
         sinA0 = (shapeY-1)/(math.sqrt((shapeX-1)**2+(shapeY-1)**2))
-        cosA = round(math.cos(angle),5)
-        sinA = round(math.sin(angle),5)
+        
+        cosA = self._round(math.cos(angle),10)
+        sinA = self._round(math.sin(angle),10)
         xRotatedList = []
         yRotatedList = []
         for y in range(0,shapeY):

@@ -55,6 +55,34 @@ class ImageProcessor:
         np.save(destinationPath,self.dataSet)
         return self
 
+    def generateArtificialData(self,symbol,xScaleList,yScaleList,rotationList,display = False, export = False):
+        newArtificialData = []
+        for dataPoint in self.dataSet:
+            if(dataPoint.output == symbol):
+                shapeX = dataPoint.input.shape[1]
+                shapeY = dataPoint.input.shape[0]
+                for rotation in rotationList:
+                    for xScale in xScaleList:
+                        if(rotation!=0 or xScale !=1):
+                            newImageData = ImageData(dataPoint.copy().input)
+                            scaledX = math.floor(shapeX*xScale)
+                            scaledY = shapeY
+                            newImageData.manipulator.scale(scaledX,scaledY,True).manipulator.rotate(rotation,True,False).manipulator.fit(shapeX,shapeY,0,0,True,True)
+                            if display:
+                                newImageData.display()
+                            newArtificialData.append(self.createDataPoint(newImageData.data,symbol))
+                    for yScale in yScaleList:
+                        if(rotation!=0 or yScale !=1):
+                            newImageData = ImageData(dataPoint.copy().input)
+                            scaledX = shapeX
+                            scaledY = math.floor(shapeY*yScale)
+                            newImageData.manipulator.scale(scaledX,scaledY,True).manipulator.rotate(rotation,True,False).manipulator.fit(shapeX,shapeY,0,0,True,True)
+                            if display:
+                                newImageData.display()
+                            newArtificialData.append(self.createDataPoint(newImageData.data,symbol))
+        self.dataSet.append(newArtificialData)
+        return self
+
     def importDataSet(self,sourcePath):
         self.dataSet = np.load(sourcePath)
         return self
@@ -88,6 +116,7 @@ class ImageProcessor:
             axs[i%x,math.floor(i/x)].get_yaxis().set_visible(False)
         plt.show()
     
-    
+
+
 
     

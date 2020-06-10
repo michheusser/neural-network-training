@@ -9,6 +9,9 @@ class ImageData:
         self.data = dataArray
         self.manipulator = ImageManipulator(self)
 
+    def copy(self):
+        return ImageData(np.copy(self.data))
+
     def loadImage(self, path):
         self.data = np.array(ImageOps.invert(Image.open(path)))
         self.normalizeData()
