@@ -1,12 +1,13 @@
 import numpy as np
-from .NeuralNetworkTrainer import NeuralNetworkTrainer 
+from .NeuralNetworkManipulator import NeuralNetworkManipulator
 
 
 class NeuralNetwork:
-  def __init__(self, layers, value=0):
+  def __init__(self,layers, value=0, outputMap = '', manipulator = None):
     self.layers = layers
+    self.outputMap = outputMap
     self.initialize(value)
-    self.trainer = NeuralNetworkTrainer(self)
+    self.manipulator = manipulator
   
   @property
   def layers(self):
@@ -19,17 +20,25 @@ class NeuralNetwork:
     else:
       raise Exception("layers must be a tuple with at least 2 entries")
 
-  def initialize(self,value=0):
-    if(value == 'randn'):
-      self.weights = tuple([None] + [np.random.randn(self.layers[i],self.layers[i-1]) for i in range(1,len(self.layers))])
-      self.bias = tuple([None] + [np.random.randn(self.layers[i],1) for i in range(1,len(self.layers))])
-    else:
-      self.weights = tuple([None] + [np.full((self.layers[i],self.layers[i-1]),value) for i in range(1,len(self.layers))])
-      self.bias = tuple([None] + [np.full((self.layers[i],1),value) for i in range(1,len(self.layers))])
-    
-    self.activations = tuple([np.zeros((self.layers[i],1)) for i in range(0,len(self.layers))])
+  def addManipulator(self):
+    self.manipulator = NeuralNetworkManipulator(self)
     return self
 
+  def initialize(self,value=0):
+    if(value == 'randn'):
+      self.weights = [None] + [np.random.randn(self.layers[i],self.layers[i-1]) for i in range(1,len(self.layers))]
+      self.bias = [None] + [np.random.randn(self.layers[i],1) for i in range(1,len(self.layers))]
+    else:
+      self.weights = [None] + [np.full((self.layers[i],self.layers[i-1]),value) for i in range(1,len(self.layers))]
+      self.bias = [None] + [np.full((self.layers[i],1),value) for i in range(1,len(self.layers))]
+    
+    self.activations = [np.zeros((self.layers[i],1)) for i in range(0,len(self.layers))]
+    return self
+
+  def loadOutputMap(self, outputMap):
+    self.outputMap = outputMap
+    return self
+    
   def activationFunction(self,x,prime=False):
     sigma = 1/(1+np.exp(-x)) 
     return sigma if not prime else sigma-sigma**2
@@ -39,8 +48,12 @@ class NeuralNetwork:
       raise Exception("Input must be a numpy column vector of length " + str(self.layers[0]))
     for i in range(0,len(self.activations[0])):
       self.activations[0][i][0] = input[i][0]
+    return self
+
+  def getOutput(self):
+    return self.activations[-1]
 
   def activate(self):
-    for i, activation in enumerate(self.activations):
-      if i:
-        activation = self.activationFunction(np.dot(self.weights[i],self.activations[i-1])+self.bias[i])
+    for i in range(1,len(self.activations)):
+        self.activations[i] = self.activationFunction(np.dot(self.weights[i],self.activations[i-1])+self.bias[i])
+    return self
