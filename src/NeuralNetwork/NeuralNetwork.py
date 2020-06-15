@@ -1,6 +1,5 @@
 import numpy as np
-from .NeuralNetworkManipulator import NeuralNetworkManipulator
-
+#from .NeuralNetworkManipulator import NeuralNetworkManipulator
 
 class NeuralNetwork:
   def __init__(self,layers, value=0, outputMap = '', manipulator = None):
@@ -21,13 +20,14 @@ class NeuralNetwork:
       raise Exception("layers must be a tuple with at least 2 entries")
 
   def addManipulator(self):
-    self.manipulator = NeuralNetworkManipulator(self)
+    #self.manipulator = NeuralNetworkManipulator(self)
     return self
 
   def initialize(self,value=0):
     if(value == 'randn'):
       self.weights = [None] + [np.random.randn(self.layers[i],self.layers[i-1]) for i in range(1,len(self.layers))]
       self.bias = [None] + [np.random.randn(self.layers[i],1) for i in range(1,len(self.layers))]
+      print("")
     else:
       self.weights = [None] + [np.full((self.layers[i],self.layers[i-1]),value) for i in range(1,len(self.layers))]
       self.bias = [None] + [np.full((self.layers[i],1),value) for i in range(1,len(self.layers))]

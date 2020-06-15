@@ -11,5 +11,9 @@ imageProcessor.getDataSummary()
 imageProcessor.generateArtificialData(symbol = ']', xScaleList = [1.7, 1.5, 1.3 ,1.15, 1], yScaleList = [1.7, 1.5, 1.3, 1.15], rotationList = [-20,-10,0,10,20], display = True)
 #imageProcessor.displayDataGroup(list(range(0,100)),"]")
 
-
+filePath = "/Users/michelsmacbookpro/Desktop/InputOutputDatapoints.npy"
+outputMap = '0123456789+-*:[]'
+layers = (784,45,16)
+neuralNetwork = NeuralNetworkManipulator().create(layers, outputMap)
+neuralNetwork.manipulator.train(trainingDataPath=filePath,epochs=10,miniBatchSize=40,eta=2, validationDataPath = filePath)
 

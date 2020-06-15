@@ -8,7 +8,7 @@ class NeuralNetworkClassifier:
       return self.network.outputMap[np.argmax(outputVector)]
 
   def vectorizeInput(self,inputData):
-    return inputData.input.flatten().reshape((-1,1))
+    return inputData.flatten().reshape((-1,1))
 
   def evaluate(self,inputData):
     self.network.loadInput(self.vectorizeInput(inputData))

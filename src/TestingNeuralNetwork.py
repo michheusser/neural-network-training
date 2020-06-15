@@ -1,4 +1,4 @@
-from NeuralNetwork.NeuralNetwork import NeuralNetwork
+#from NeuralNetwork.NeuralNetwork import NeuralNetwork
 from NeuralNetwork.NeuralNetworkManipulator import NeuralNetworkManipulator
 import numpy as np
 import math
@@ -28,6 +28,7 @@ filePath = "/Users/michelsmacbookpro/Desktop/InputOutputDatapoints.npy"
 outputMap = '0123456789+-*:[]'
 layers = (784,45,16)
 neuralNetwork = NeuralNetworkManipulator().create(layers, outputMap)
-
+neuralNetwork.manipulator.train(trainingDataPath=filePath,epochs=10,miniBatchSize=40,eta=2, validationDataPath = filePath)
+#print(neuralNetwork.manipulator.validate(validationDataPath = filePath))
 #print(neuralNetwork.trainer.loadOutputMap(outputMap).trainer.mapOutputToVector('0'))
 

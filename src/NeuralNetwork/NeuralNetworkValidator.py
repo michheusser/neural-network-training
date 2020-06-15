@@ -12,7 +12,7 @@ class NeuralNetworkValidator:
   def validate(self):
     correctPredictionsCounter = 0
     for dataPoint in self.dataSet:
-      if self.network.manipulator.classifier.evaluate(dataPoint.output) == dataPoint.output:
+      if self.network.manipulator.classifier.evaluate(dataPoint.input) == dataPoint.output:
         correctPredictionsCounter += 1
     return correctPredictionsCounter, len(self.dataSet)
   
