@@ -44,7 +44,7 @@ class ImageProcessor:
                         imageData.display()
                     self.addData(imageData.data,root.rpartition("/")[2])
                     counter += 1
-                    print("Folder name: " + root.rpartition("/")[2] + " files Processed: " + str(counter) + " of " + str(len(files)))
+                    print("Folder name: " + root.rpartition("/")[2] + ", files Processed: " + str(counter) + " of " + str(len(files)))
         
         print("Total Datapoints: " + str(len(self.dataSet)))
         if removeDuplicates:
@@ -57,8 +57,11 @@ class ImageProcessor:
 
     def generateArtificialData(self,symbol,xScaleList,yScaleList,rotationList,display = False, export = False):
         newArtificialData = []
+        counter = 0
         for dataPoint in self.dataSet:
             if(dataPoint.output == symbol):
+                print("Generating new data for '" + str(symbol)+ "'. Points processed: ", str(counter))
+                counter += 1
                 shapeX = dataPoint.input.shape[1]
                 shapeY = dataPoint.input.shape[0]
                 for rotation in rotationList:
@@ -80,11 +83,11 @@ class ImageProcessor:
                             if display:
                                 newImageData.display()
                             newArtificialData.append(self.createDataPoint(newImageData.data,symbol))
-        self.dataSet.append(newArtificialData)
+        self.dataSet.extend(newArtificialData)
         return self
 
     def importDataSet(self,sourcePath):
-        self.dataSet = np.load(sourcePath)
+        self.dataSet = list(np.load(sourcePath))
         return self
 
     def getDataSummary(self):
@@ -99,19 +102,36 @@ class ImageProcessor:
         print("Total Datapoints: " + str(len(self.dataSet)))
         for i in range(0,len(symbols)):
             print("Symbol: " + str(symbols[i]) + ", entries: " + str(counter[i]))
-        return (symbols, counter)
+        return [(symbol, count) for symbol, count in zip(symbols,counter)]
 
-    def displayDataGroup(self,indexArray,symbol):
-        listDataPoints = []
+    def getOutputs(self):
+        outputs = []
         for dataPoint in self.dataSet:
-            if(dataPoint.output == symbol):
-                listDataPoints.append(dataPoint)
-        indexArray
-        x = 10
-        y = math.ceil(len(indexArray)/x)
+            if not (dataPoint.output in outputs):
+                outputs.append(dataPoint.output)
+        return outputs
+
+    def reduceDatasets(self,size):
+        reducedDataSet = []
+        print("Outputs: " + str(self.getOutputs))
+        for output in self.getOutputs():
+            counter = 0
+            print("Reducing set for '" + str(output) + "'")
+            for dataPoint in self.dataSet:
+                if output == dataPoint.output:
+                    reducedDataSet.append(dataPoint)
+                    counter += 1
+                if counter == size:
+                    break
+        self.dataSet = reducedDataSet
+
+    def displayDataGroup(self,start, end,symbol, gridWidth):
+        listDataPoints = [dataPoint for dataPoint in self.dataSet if dataPoint.output == symbol]
+        x = gridWidth
+        y = math.ceil((end-start+1)/x)
         fig, axs = plt.subplots(x, y)
-        for i in range(0,len(indexArray)):
-            axs[i%x,math.floor(i/x)].imshow(listDataPoints[indexArray[i]].input)
+        for i in range(start,end):
+            axs[i%x,math.floor(i/x)].imshow(listDataPoints[i].input)
             axs[i%x,math.floor(i/x)].get_xaxis().set_visible(False)
             axs[i%x,math.floor(i/x)].get_yaxis().set_visible(False)
         plt.show()
