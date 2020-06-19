@@ -12,10 +12,15 @@ class ImageData:
     def copy(self):
         return ImageData(np.copy(self.data))
 
-    def loadImage(self, path):
-        self.data = np.array(ImageOps.invert(Image.open(path)))
+    def loadImage(self, path, greyScale = False):
+        #self.data = np.array(ImageOps.invert(Image.open(path)))
+        self.data = np.array(ImageOps.invert(Image.open(path).convert('L')))
         self.normalizeData()
         self.cleanData()
+        return self
+
+    def exportImage(self, path, name):
+        ImageOps.invert(Image.fromarray((self.data*255).astype('uint8'), 'L')).save(path+'/'+name+'.png')
         return self
 
     def normalizeData(self):

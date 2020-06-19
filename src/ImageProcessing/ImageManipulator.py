@@ -82,39 +82,9 @@ class ImageManipulator:
     def scale(self,xFields,yFields,scaleStroke=False):
         scaledData = np.zeros((yFields,xFields))
         if(scaleStroke):
-            # xFieldsNetto = xFields / (1 + 1/self.imageData.data.shape[1])
-            # strokeMarginX = math.floor(xFieldsNetto / self.imageData.data.shape[1])
-            
-            # xFields + strokeMargin = xFieldsAugmented
-            # xFieldsAugmented = xFields*(1 + 1/self.image.data.shape[1])
-            # strokeMarginX = xFieldsAugmented / self.imageData.data.shape[1] # -1 potentially
-            # xFields = xFieldsAugmented - strokeMarginX 
-            # xFields = xFieldsAugmented - xFieldsAugmented/shape + 1
-            # strokeMarginX = xFieldsAugmented / self.imageData.data.shape[1] - 1
-            # xFieldsAugmented = (xFields-1) / (1 - 1 / self.imageData.data.shape[1]) 
-
-            #IMPORTANT: 
-            # 
-            # xFields + strokeMarginX = xFieldsAugmented*
-            # map: (x) => x * xFieldsAugmented / shapeX      
-            # xLastShape = shapeX -1
-            # xLastAugmented = (shapeX - 1) * xFieldsAugmented / shapeX
-            # xLastAugmented = (xFields - 1)
-            # => (xFields - 1) = (shapeX - 1) * xFieldsAugmented / shapeX
-            # => xFieldsAugmented = (xFields - 1)*shapeX/(shapeX-1)
-            # => strokeMarginX = xFieldsAugmented - xFields
-            # strokeMarginX = (xFields - 1)*shapeX/(shapeX-1) - xFields
-            # ----
-            # strokeMarginX = xFields*(shapeX/(shapeX-1)-1)-shapeX/(shapeX-1)
-            # xFieldsAugmented = (xFields - 1)*shapeX/(shapeX-1)
-            # => xFieldsAugmented = math.ceil(xFields-1)*shapeX/(shapeX-1) worked with math.ceil since there were some
-            # jumps when iterating through different scaling ratios
-
             shapeX = self.imageData.data.shape[1]
-            #strokeMarginX = math.ceil(xFields*(shapeX/(shapeX-1)-1)-shapeX/(shapeX-1))
             xFieldsAugmented = math.ceil((xFields - 1)*shapeX/(shapeX-1)) if shapeX != 1 else 0
             shapeY = self.imageData.data.shape[0]
-            #strokeMarginY = math.ceil(yFields*(shapeY/(shapeY-1)-1)-shapeY/(shapeY-1))
             yFieldsAugmented = math.ceil((yFields - 1)*shapeY/(shapeY-1)) if shapeY != 1 else 0
 
             scalingX = xFieldsAugmented / self.imageData.data.shape[1]
@@ -132,8 +102,6 @@ class ImageManipulator:
                             if(self.imageData.data[yNext][xNext] and (not self.isCorner(x,y,position))):
                                 xScaledNext = math.floor(xNext * scalingX)
                                 yScaledNext = math.floor(yNext * scalingY)
-                                #xScaledNext = xScaled+1 if xScaledNext == xScaled else xScaledNext
-                                #yScaledNext = yScaled+1 if yScaledNext == yScaled else yScaledNext
                                 tMax = max(abs(xScaledNext-xScaled),abs(yScaledNext-yScaled))
                                 for t in range(1,tMax):
                                     xP = math.floor(xScaled+(t/tMax)*(xScaledNext-xScaled))
@@ -183,32 +151,35 @@ class ImageManipulator:
     def _round(self,x,n):
         return int(x*10**n + 0.5 * math.copysign(1,x))*10**(-n)
         
-    def rotate(self, angle, rotateStroke = False,fit = False):
+    def rotate(self, angle, rotateStroke = False,fit = False,roundPoints=True):
         angle = angle*2*math.pi/360
         shapeX = self.imageData.data.shape[1]
         shapeY = self.imageData.data.shape[0]
-        cosA0 = (shapeX-1)/(math.sqrt((shapeX-1)**2+(shapeY-1)**2))
-        sinA0 = (shapeY-1)/(math.sqrt((shapeX-1)**2+(shapeY-1)**2))
-        
         cosA = self._round(math.cos(angle),10)
         sinA = self._round(math.sin(angle),10)
         xRotatedList = []
         yRotatedList = []
         for y in range(0,shapeY):
             for x in range(0,shapeX):
+                if roundPoints:                    
+                    xRotated = round(x*cosA - y*sinA)
+                    yRotated = round(x*sinA + y*cosA) 
+                else:
                     xRotated = math.ceil(x*cosA - y*sinA) if x*cosA - y*sinA > 0 else math.floor(x*cosA - y*sinA)
                     yRotated = math.ceil(x*sinA + y*cosA) if x*sinA + y*cosA > 0 else math.floor(x*sinA + y*cosA) 
-                    xRotatedList.append(xRotated)
-                    yRotatedList.append(yRotated)
+                xRotatedList.append(xRotated)
+                yRotatedList.append(yRotated)
         rotatedData = np.zeros((max(yRotatedList)-min(yRotatedList)+1,max(xRotatedList)-min(xRotatedList)+1))
-        
         for y in range(0,shapeY):
             for x in range(0,shapeX):
                 if(not rotateStroke or self.imageData.data[y][x]):
-                    xRotated = math.ceil(x*cosA - y*sinA) -min(xRotatedList) if x*cosA - y*sinA > 0 else math.floor(x*cosA - y*sinA) -min(xRotatedList)
-                    yRotated = math.ceil(x*sinA + y*cosA) -min(yRotatedList) if x*sinA + y*cosA > 0 else math.floor(x*sinA + y*cosA) -min(yRotatedList)
+                    if roundPoints:
+                        xRotated = round(x*cosA - y*sinA) -min(xRotatedList)
+                        yRotated = round(x*sinA + y*cosA) -min(yRotatedList)
+                    else:
+                        xRotated = math.ceil(x*cosA - y*sinA) -min(xRotatedList) if x*cosA - y*sinA > 0 else math.floor(x*cosA - y*sinA) -min(xRotatedList)
+                        yRotated = math.ceil(x*sinA + y*cosA) -min(yRotatedList) if x*sinA + y*cosA > 0 else math.floor(x*sinA + y*cosA) -min(yRotatedList)
                     rotatedData[yRotated][xRotated] = self.imageData.data[y][x]
-
         self.imageData.data = rotatedData
         if fit:
             self.fit(xFields = shapeX,yFields = shapeY,xMargin = 0, yMargin = 0,keepRatio=True,scaleStroke = rotateStroke)

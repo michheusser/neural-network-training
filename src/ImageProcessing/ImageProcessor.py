@@ -2,8 +2,10 @@ import os
 import numpy as np
 import math
 import matplotlib.pyplot as plt
+import functools
 from .ImageData import ImageData
 from .InputOutputData import InputOutputData
+from .ImageSegmentator import ImageSegmentator
 
 class ImageProcessor:
     def __init__(self):
@@ -38,7 +40,7 @@ class ImageProcessor:
             print("Folder name: " + root.rpartition("/")[2] + ", files: " + str(len(files)) )
             for file in files:
                 path = root + "/" + file
-                if path.endswith(".jpg"):
+                if path.endswith(".png"):
                     imageData = self.processImageData(ImageData().loadImage(path))
                     if display:
                         imageData.display()
@@ -125,16 +127,52 @@ class ImageProcessor:
                     break
         self.dataSet = reducedDataSet
 
-    def displayDataGroup(self,start, end,symbol, gridWidth):
-        listDataPoints = [dataPoint for dataPoint in self.dataSet if dataPoint.output == symbol]
-        x = gridWidth
-        y = math.ceil((end-start+1)/x)
-        fig, axs = plt.subplots(x, y)
-        for i in range(start,end):
-            axs[i%x,math.floor(i/x)].imshow(listDataPoints[i].input)
-            axs[i%x,math.floor(i/x)].get_xaxis().set_visible(False)
-            axs[i%x,math.floor(i/x)].get_yaxis().set_visible(False)
-        plt.show()
+    def segmentImage(self, sourcePath, destinationPath, display = False):
+        if display:
+            segments = ImageSegmentator(ImageData().loadImage(sourcePath).display()).createSegments()
+        else:
+            segments = ImageSegmentator(ImageData().loadImage(sourcePath)).createSegments()
+        for i,segment in enumerate(segments):
+            print("Processing image: " + str(i) + " of " + str(len(segments)))
+            self.processImageData(segment)
+            segment.exportImage(destinationPath,os.path.basename(sourcePath).rpartition(".")[0]+"_"+str(i))
+        return self
+
+    def segmentBatch(self, sourcePath, destinationPath):
+        for (root,dirs,files) in os.walk(sourcePath, topdown = True): 
+                counter = 0
+                print("Folder name: " + root.rpartition("/")[2] + ", files: " + str(len(files)) )
+                for file in files:
+                    path = root + "/" + file
+                    if path.endswith(".png"):
+                        self.segmentImage(path,destinationPath)
+                        counter += 1
+                        print("Folder name: " + root.rpartition("/")[2] + ", files Processed: " + str(counter) + " of " + str(len(files)))
+            
+
+    # def removeSmallElements(self, pixelThreshold, displayDeleted = False):
+    #     newDataSet = []
+    #     for imageData in self.dataSet:
+    #         pixels = functools.reduce(lambda x,y: x+1 if y else x,imageData.data.flatten(), 0)
+    #         if pixels > pixelThreshold:
+    #             newDataSet.append(imageData)
+    #         elif displayDeleted:
+    #             imageData.display()
+    #     self.dataSet = newDataSet
+    #     return self
+
+    # def displayDataGroup(self,start, end,symbol, gridWidth):
+    #     listDataPoints = [dataPoint for dataPoint in self.dataSet if dataPoint.output == symbol]
+    #     x = gridWidth
+    #     y = math.ceil((end-start+1)/x)
+    #     fig, axs = plt.subplots(x, y)
+    #     for i in range(start,end):
+    #         axs[i%x,math.floor(i/x)].imshow(listDataPoints[i].input)
+    #         axs[i%x,math.floor(i/x)].get_xaxis().set_visible(False)
+    #         axs[i%x,math.floor(i/x)].get_yaxis().set_visible(False)
+    #     plt.show()
+    
+    
     
 
 

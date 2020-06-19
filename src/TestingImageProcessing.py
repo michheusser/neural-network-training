@@ -1,9 +1,13 @@
 from ImageProcessing.ImageData import ImageData
 from ImageProcessing.ImageProcessor import ImageProcessor
+from ImageProcessing.ImageSegmentator import ImageSegmentator
 import numpy as np
 
 path = "/Users/michelsmacbookpro/Desktop/Projects/neural-network-training/src/test.jpg"
 path2 = "/Users/michelsmacbookpro/Desktop/Projects/neural-network-training/src/test2.jpg"
+path3 = "/Users/michelsmacbookpro/Desktop/Projects/neural-network-training/ImageData/test3.png"
+
+
 #image = ImageData().loadImage(path).display().manipulator.shift(-10,-10).display().manipulator.align().display()
 #image = ImageData().loadImage(path).display().manipulator.addMargins(20,20).display().manipulator.wrap(3,3).display().manipulator.scale(50,50).display()
 #image = ImageData().loadImage(path).display().manipulator.addMargins(0,0).display().manipulator.scale(10,10).display()
@@ -56,5 +60,22 @@ path2 = "/Users/michelsmacbookpro/Desktop/Projects/neural-network-training/src/t
 #image = ImageData(np.array([[0,1]])).manipulator.addMargins(0,0).display().manipulator.rotate4(-225).display()
 
 #image = ImageData().loadImage(path2).display().manipulator.rotate(15,True,True).display()
-image = ImageData().loadImage(path2).manipulator.rotate(15,True,True)
+#image = ImageData().loadImage(path2).manipulator.rotate(60,True,True,True).display()
+#image = ImageData().loadImage(path2).manipulator.rotate(60,True,True,False).display()
+
+#imageProcessor = ImageProcessor()
+#imageProcessor.segmentImage(path0)
+#imageProcessor.displayData()
+
+#imageProcessor.removeSmallElements(20, True)
+#imageProcessor.displayData()
+
+
+#path3 = "/Users/michelsmacbookpro/Desktop/Projects/neural-network-training/ImageData/test3.png"
+#path3seg = "/Users/michelsmacbookpro/Desktop/Projects/neural-network-training/ImageData"
+#imageProcessor = ImageProcessor().segmentImage(path3, path3seg,False)
+
+sourcePath = "/Users/michelsmacbookpro/Desktop/Projects/Symbol Images (Own Dataset)/Bulk Processed/0/0_3rotate20ccw.png"
+destinationPath = "/Users/michelsmacbookpro/Desktop/Projects/Symbol Images (Own Dataset)/Bulk Processed/0/Characters"
+imageProcessor = ImageProcessor().segmentImage(sourcePath, destinationPath)
 
