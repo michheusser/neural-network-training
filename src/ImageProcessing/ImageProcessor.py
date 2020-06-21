@@ -134,8 +134,8 @@ class ImageProcessor:
             segments = ImageSegmentator(ImageData().loadImage(sourcePath)).createSegments()
         for i,segment in enumerate(segments):
             print("Processing image: " + str(i+1) + " of " + str(len(segments)))
-        #    self.processImageData(segment)
-        #    segment.exportImage(destinationPath,os.path.basename(sourcePath).rpartition(".")[0]+"_"+str(i))
+            self.processImageData(segment)
+            segment.exportImage(destinationPath,os.path.basename(sourcePath).rpartition(".")[0]+"_"+str(i))
         return self
 
     def segmentBatch(self, sourcePath, destinationPath, extension = '.png',display=False):

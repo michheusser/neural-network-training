@@ -37,11 +37,10 @@ class ImageSegmentator:
         counter = 0
         for y in range(0,self.imageData.data.shape[0]):
             for x in range(0,self.imageData.data.shape[1]): 
-                #if self.imageData.data[y][x]:
-                #    imageSegment = ImageData(np.zeros(self.imageData.data.shape))
-                #    self.agglomerate(imageCopy, imageSegment, x, y)
-                #    self.imageSegments.push(imageSegment)
-                imageSegment = self.agglomerate(x,y,imageCopy)
+                try:
+                    imageSegment = self.agglomerate(x,y,imageCopy)
+                except RecursionError:
+                    print("Maximum depth reached. Segment not added")
                 if imageSegment:
                     counter += 1
                     self.imageSegments.append(imageSegment)

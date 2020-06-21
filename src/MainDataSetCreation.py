@@ -9,6 +9,6 @@ sourcePath = "/Users/michelsmacbookpro/Desktop/Projects/Symbol Images (Own Datas
 destinationPath = "/Users/michelsmacbookpro/Desktop/Projects/Symbol Images (Own Dataset)/Single Files/"
 
 for char in outputMap:
-  imageProcessor = ImageProcessor().segmentBatch(sourcePath+char, destinationPath+char, '.png',True)
+  imageProcessor = ImageProcessor().segmentBatch(sourcePath+char, destinationPath+char, '.png',False)
 
 
