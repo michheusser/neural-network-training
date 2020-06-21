@@ -133,19 +133,25 @@ class ImageProcessor:
         else:
             segments = ImageSegmentator(ImageData().loadImage(sourcePath)).createSegments()
         for i,segment in enumerate(segments):
-            print("Processing image: " + str(i) + " of " + str(len(segments)))
-            self.processImageData(segment)
-            segment.exportImage(destinationPath,os.path.basename(sourcePath).rpartition(".")[0]+"_"+str(i))
+            print("Processing image: " + str(i+1) + " of " + str(len(segments)))
+        #    self.processImageData(segment)
+        #    segment.exportImage(destinationPath,os.path.basename(sourcePath).rpartition(".")[0]+"_"+str(i))
         return self
 
-    def segmentBatch(self, sourcePath, destinationPath):
+    def segmentBatch(self, sourcePath, destinationPath, extension = '.png',display=False):
+        print("*****************")
+        print("Batch segmentation starting...")
+        print("Source path: " + str(sourcePath))
+        print("Destination path: " + str(destinationPath))
         for (root,dirs,files) in os.walk(sourcePath, topdown = True): 
-                counter = 0
-                print("Folder name: " + root.rpartition("/")[2] + ", files: " + str(len(files)) )
+                counter = 1
+                print("Root folder: " + str(root) + ", files: " +str(len(files)))
+                #print("Folder name: " + root.rpartition("/")[2] + ", files: " + str(len(files)) )
                 for file in files:
+                    print("File to process: " + str(file))
                     path = root + "/" + file
-                    if path.endswith(".png"):
-                        self.segmentImage(path,destinationPath)
+                    if path.endswith(extension):
+                        self.segmentImage(path,destinationPath,display)
                         counter += 1
                         print("Folder name: " + root.rpartition("/")[2] + ", files Processed: " + str(counter) + " of " + str(len(files)))
             

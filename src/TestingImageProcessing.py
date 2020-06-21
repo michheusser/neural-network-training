@@ -77,5 +77,5 @@ path3 = "/Users/michelsmacbookpro/Desktop/Projects/neural-network-training/Image
 
 sourcePath = "/Users/michelsmacbookpro/Desktop/Projects/Symbol Images (Own Dataset)/Bulk Processed/0/0_3rotate20ccw.png"
 destinationPath = "/Users/michelsmacbookpro/Desktop/Projects/Symbol Images (Own Dataset)/Bulk Processed/0/Characters"
-imageProcessor = ImageProcessor().segmentImage(sourcePath, destinationPath)
+imageProcessor = ImageProcessor().segmentImage(sourcePath, destinationPath,True)
 

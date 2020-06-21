@@ -21,7 +21,7 @@ class ImageSegmentator:
         if not bufferImage.data[y][x]:
             return imageSegment
         if not imageSegment:
-            print("Segmentating body...")
+            #print("Segmentating body...")
             imageSegment = ImageData(np.zeros(self.imageData.data.shape))
         imageSegment.data[y][x] = bufferImage.data[y][x]
         bufferImage.data[y][x] = 0
@@ -44,8 +44,8 @@ class ImageSegmentator:
                 imageSegment = self.agglomerate(x,y,imageCopy)
                 if imageSegment:
                     counter += 1
-                    print("Segment Created. Segments: "+ str(counter))
                     self.imageSegments.append(imageSegment)
+        print("Segmentation finished: " + str(counter) + " segments created")
         return self.imageSegments
 
     def clearSegments(self):
