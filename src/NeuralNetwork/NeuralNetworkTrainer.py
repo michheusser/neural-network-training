@@ -46,7 +46,7 @@ class NeuralNetworkTrainer:
 
   def shuffleData(self):
     rd.shuffle(self.dataSet)
-    return self.network
+    return self.network 
 
   def createMiniBatch(self, miniBatchSize, index):
     return self.dataSet[index*miniBatchSize:(index+1)*miniBatchSize] 

@@ -1,4 +1,5 @@
 import os
+import random
 import numpy as np
 import math
 import matplotlib.pyplot as plt
@@ -47,14 +48,18 @@ class ImageProcessor:
                     self.addData(imageData.data,root.rpartition("/")[2])
                     counter += 1
                     print("Folder name: " + root.rpartition("/")[2] + ", files Processed: " + str(counter) + " of " + str(len(files)))
+        return self
         
         print("Total Datapoints: " + str(len(self.dataSet)))
         if removeDuplicates:
             self.removeDuplicates()
         return self
 
-    def exportDataSet(self, destinationPath):
-        np.save(destinationPath,self.dataSet)
+    def exportDataSet(self, destinationPath, dataSet=None):
+        if dataSet:
+            np.save(destinationPath,dataSet)
+        else:
+            np.save(destinationPath,self.dataSet)
         return self
 
     def generateArtificialData(self,symbol,xScaleList,yScaleList,rotationList,display = False, export = False):
@@ -127,6 +132,13 @@ class ImageProcessor:
                     break
         self.dataSet = reducedDataSet
 
+    def scalePermutation(self, xScaleList, yScaleList):
+        permutations = []
+        for xScale in xScaleList:
+            for yScale in yScaleList:
+                permutations.append((xScale,yScale))
+        return permutations
+
     def segmentImage(self, sourcePath, destinationPath, display = False):
         if display:
             segments = ImageSegmentator(ImageData().loadImage(sourcePath).display()).createSegments()
@@ -138,13 +150,26 @@ class ImageProcessor:
             segment.exportImage(destinationPath,os.path.basename(sourcePath).rpartition(".")[0]+"_"+str(i))
         return self
 
+    def createScaledCopies(self, sourcePath, destinationPath, xScaleList, yScaleList):
+        image = ImageData().loadImage(sourcePath)
+        print("Creating scaled images...")
+        counter = 0
+        for scaling in self.scalePermutation(xScaleList,yScaleList):
+            if not scaling == (1,1):
+                image.manipulator.scale(math.ceil(image.data.shape[0]*scaling[0]),math.ceil(image.data.shape[1]*scaling[1]),True)
+                self.processImageData(image)
+                image.exportImage(destinationPath,os.path.basename(sourcePath).rpartition(".")[0]+"_scaled_"+"x"+str(scaling[0]).replace('.','_')+"y"+str(scaling[1]).replace('.','_'))
+                counter += 1
+        print("Created " + str(counter) + " scaled images")
+        return self
+
     def segmentBatch(self, sourcePath, destinationPath, extension = '.png',display=False):
         print("*****************")
         print("Batch segmentation starting...")
         print("Source path: " + str(sourcePath))
         print("Destination path: " + str(destinationPath))
         for (root,dirs,files) in os.walk(sourcePath, topdown = True): 
-                counter = 1
+                counter = 0
                 print("Root folder: " + str(root) + ", files: " +str(len(files)))
                 #print("Folder name: " + root.rpartition("/")[2] + ", files: " + str(len(files)) )
                 for file in files:
@@ -154,29 +179,44 @@ class ImageProcessor:
                         self.segmentImage(path,destinationPath,display)
                         counter += 1
                         print("Folder name: " + root.rpartition("/")[2] + ", files Processed: " + str(counter) + " of " + str(len(files)))
-            
 
-    # def removeSmallElements(self, pixelThreshold, displayDeleted = False):
-    #     newDataSet = []
-    #     for imageData in self.dataSet:
-    #         pixels = functools.reduce(lambda x,y: x+1 if y else x,imageData.data.flatten(), 0)
-    #         if pixels > pixelThreshold:
-    #             newDataSet.append(imageData)
-    #         elif displayDeleted:
-    #             imageData.display()
-    #     self.dataSet = newDataSet
-    #     return self
+    def extendDataSet(self, sourcePath, destinationPath, xScaleList, yScaleList, extension = '.png'):
+        print("*****************")
+        print("Dataset extension starting...")
+        print("Source path: " + str(sourcePath))
+        print("Destination path: " + str(destinationPath))
+        for (root,dirs,files) in os.walk(sourcePath, topdown = True): 
+                counter = 0
+                print("Root folder: " + str(root) + ", files: " +str(len(files)))
+                #print("Folder name: " + root.rpartition("/")[2] + ", files: " + str(len(files)) )
+                for file in files:
+                    print("File to process: " + str(file))
+                    path = root + "/" + file
+                    if path.endswith(extension):
+                        self.createScaledCopies(path, destinationPath, xScaleList, yScaleList)
+                        counter += 1
+                        print("Folder name: " + root.rpartition("/")[2] + ", files Processed: " + str(counter) + " of " + str(len(files)))
+    
+    def removeSmallElements(self, pixelThreshold, displayDeleted = False):
+        newDataSet = []
+        for imageData in self.dataSet:
+            pixels = functools.reduce(lambda x,y: x+1 if y else x,imageData.data.flatten(), 0)
+            if pixels > pixelThreshold:
+                newDataSet.append(imageData)
+            elif displayDeleted:
+                imageData.display()
+        self.dataSet = newDataSet
+        return self
 
-    # def displayDataGroup(self,start, end,symbol, gridWidth):
-    #     listDataPoints = [dataPoint for dataPoint in self.dataSet if dataPoint.output == symbol]
-    #     x = gridWidth
-    #     y = math.ceil((end-start+1)/x)
-    #     fig, axs = plt.subplots(x, y)
-    #     for i in range(start,end):
-    #         axs[i%x,math.floor(i/x)].imshow(listDataPoints[i].input)
-    #         axs[i%x,math.floor(i/x)].get_xaxis().set_visible(False)
-    #         axs[i%x,math.floor(i/x)].get_yaxis().set_visible(False)
-    #     plt.show()
+    def createLearningSets(self, trainingSetPath, trainingSetLength, validationSetPath, validationSetLength, testingSetPath, shuffle = True):
+        if shuffle:
+            print("Shuffling dataset...")
+            random.shuffle(self.dataSet)
+            print("Dataset shuffled.")
+        self.exportDataSet(trainingSetPath,self.dataSet[0:math.floor(len(self.dataSet)*trainingSetLength)])
+        self.exportDataSet(validationSetPath,self.dataSet[math.floor(len(self.dataSet)*trainingSetLength):math.floor(len(self.dataSet)*(trainingSetLength+validationSetLength))])
+        self.exportDataSet(testingSetPath,self.dataSet[math.floor(len(self.dataSet)*(trainingSetLength+validationSetLength)):len(self.dataSet)])
+        return self
     
     
     

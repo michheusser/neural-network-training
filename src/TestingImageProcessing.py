@@ -75,7 +75,19 @@ path3 = "/Users/michelsmacbookpro/Desktop/Projects/neural-network-training/Image
 #path3seg = "/Users/michelsmacbookpro/Desktop/Projects/neural-network-training/ImageData"
 #imageProcessor = ImageProcessor().segmentImage(path3, path3seg,False)
 
-sourcePath = "/Users/michelsmacbookpro/Desktop/Projects/Symbol Images (Own Dataset)/Bulk Processed/0/0_3rotate20ccw.png"
-destinationPath = "/Users/michelsmacbookpro/Desktop/Projects/Symbol Images (Own Dataset)/Bulk Processed/0/Characters"
-imageProcessor = ImageProcessor().segmentImage(sourcePath, destinationPath,True)
+#sourcePath = "/Users/michelsmacbookpro/Desktop/Projects/Symbol Images (Own Dataset)/Bulk Processed/0/0_3rotate20ccw.png"
+#destinationPath = "/Users/michelsmacbookpro/Desktop/Projects/Symbol Images (Own Dataset)/Bulk Processed/0/Characters"
+#imageProcessor = ImageProcessor().segmentImage(sourcePath, destinationPath,True)
 
+#sourcePath = "/Users/michelsmacbookpro/Desktop/Projects/neural-network-training/ImageData/0.png"
+#destinationPath = "/Users/michelsmacbookpro/Desktop/Projects/neural-network-training/ImageData/"
+
+#imageProcesor = ImageProcessor().createScaledCopies([1,1.2,1.3], [1,1.2,1.3], sourcePath, destinationPath)
+
+outputMap = '0123456789+-*%[]'
+
+sourcePath = "/Users/michelsmacbookpro/Desktop/Symbol Images_Test/Single Files/"
+destinationPath = "/Users/michelsmacbookpro/Desktop/Symbol Images_Test/Scaled Files/"
+
+for char in outputMap:
+  imageProcessor = ImageProcessor().extendDataSet(sourcePath+char, destinationPath+char,[1,1.2,1.3], [1,1.2,1.3], '.png')
