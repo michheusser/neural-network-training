@@ -10,6 +10,7 @@ class NeuralNetworkTrainer:
     self.dataSet = []
     self.initializeWeightsBias()
     self.validator = validator
+    self.validationAccuracy = []
     
   def initializeWeightsBias(self):
     self.gradientToBias = [None]*len(self.network.layers)
@@ -60,7 +61,6 @@ class NeuralNetworkTrainer:
     return inputOutputData.input.flatten().reshape((-1,1)), self.mapOutputToVector(inputOutputData.output)
 
   def train(self,epochs,miniBatchSize,eta):
-    validationAccuracy = [None]*epochs
     self.eta = eta
     print("Training data: ", str(len(self.dataSet)), " datapoints")
     print("Training starting...")
@@ -70,24 +70,24 @@ class NeuralNetworkTrainer:
       for j in range(0,len(self.dataSet)//miniBatchSize):
         self.batchBackPropagation(self.createMiniBatch(miniBatchSize,j))
         self.update()
-        print("Epoch:", str(i), ", batch:", str(j), "of" , str(len(self.dataSet)//miniBatchSize))
+        print("Epoch:", str(len(self.validationAccuracy)+1), ", batch:", str(j+1), "of" , str(len(self.dataSet)//miniBatchSize))
       print("Validating...")
       correctOutputs, dataSetLength = self.validator.validate()
-      print("Finished Validation.")
-      validationAccuracy[i] = round(correctOutputs/dataSetLength,4)
+      print("Finished Validation with " + str(round(correctOutputs*100/dataSetLength,2)) + " accuracy.")
+      self.validationAccuracy.append(round(correctOutputs/dataSetLength,4))
     endTime = time.time()
     print("Training finished:", round(endTime - startTime), "seconds")
-    self.displayResults(validationAccuracy)
+    self.displayResults()
     return self.network
 
   def loadDataFile(self, sourcePath):
     self.dataSet = np.load(sourcePath)
     return self.network
 
-  def displayResults(self,validationAccuracy):
-    plt.plot(validationAccuracy)
+  def displayResults(self):
+    plt.plot(self.validationAccuracy)
     plt.show()
-    return validationAccuracy
+    return self.network
   
 
 #def backPropagation(self,input,output):
