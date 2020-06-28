@@ -85,7 +85,7 @@ class NeuralNetworkTrainer:
   def vectorizeInputOuput(self,inputOutputData):
     return inputOutputData.input.flatten().reshape((-1,1)), self.mapOutputToVector(inputOutputData.output)
 
-  def train(self,epochs,miniBatchSize,eta,func='MSE'):
+  def train(self,epochs,miniBatchSize,eta,func='MSE',calculateCost=False):
     self.eta = eta
     print("Training data: ", str(len(self.dataSet)), " datapoints")
     print("Training starting...")
@@ -100,10 +100,11 @@ class NeuralNetworkTrainer:
       correctOutputs, dataSetLength = self.validator.validate()
       print("Finished Validation with " + str(round(correctOutputs*100/dataSetLength,2)) + " accuracy.")
       self.validationAccuracy.append(round(correctOutputs/dataSetLength,4))
-      print("Calculating current cost...")
-      cost = self.evaluateCostFunction(func)
-      print("Current cost: " + str(cost))
-      self.costs.append(cost)
+      if not calculateCost:
+        print("Calculating current cost...")
+        cost = self.evaluateCostFunction(func)
+        print("Current cost: " + str(cost))
+        self.costs.append(cost)
     endTime = time.time()
     print("Training finished:", round(endTime - startTime), "seconds")
     self.displayResults()

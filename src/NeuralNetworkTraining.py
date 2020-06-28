@@ -8,6 +8,6 @@ neuralNetworkFile = "/Users/michelsmacbookpro/Desktop/Projects/neural-network-tr
 outputMap = '0123456789+-*%[]'
 layers = (784,45,16)
 neuralNetwork = NeuralNetworkManipulator().create(layers, outputMap,'softmax')
-neuralNetwork = NeuralNetworkManipulator().importFiles(neuralNetworkFile)
-neuralNetwork.manipulator.train(trainingDataPath=trainingSetPath,epochs=5,miniBatchSize=20,eta=3, validationDataPath = validationSetPath,func = 'CE')
+#neuralNetwork = NeuralNetworkManipulator().importFiles(neuralNetworkFile)
+neuralNetwork.manipulator.train(trainingDataPath=trainingSetPath,epochs=20,miniBatchSize=200,eta=3, validationDataPath = validationSetPath,func = 'CE',calculateCost = False)
 neuralNetwork.manipulator.exportFiles(neuralNetworkFile)

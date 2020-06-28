@@ -22,10 +22,10 @@ class NeuralNetworkManipulator:
   def test(self, input):
     return self.classifier.evaluate(input)
   
-  def train(self, trainingDataPath,epochs,miniBatchSize,eta, validationDataPath,func):
+  def train(self, trainingDataPath,epochs,miniBatchSize,eta, validationDataPath,func,calculateCost):
     self.validator.loadDataFile(validationDataPath)
     self.trainer.loadDataFile(trainingDataPath)
-    self.trainer.train(epochs,miniBatchSize,eta,func)
+    self.trainer.train(epochs,miniBatchSize,eta,func,calculateCost)
     return self.network
   
   def validate(self, validationDataPath):
