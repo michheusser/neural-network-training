@@ -11,27 +11,50 @@ class NeuralNetworkTrainer:
     self.initializeWeightsBias()
     self.validator = validator
     self.validationAccuracy = []
+    self.costs = []
     
   def initializeWeightsBias(self):
-    self.gradientToBias = [None]*len(self.network.layers)
-    self.gradientToWeights = [None]*len(self.network.layers)
+    self.gradientToBias = [None] +[np.zeros(self.network.bias[i].shape) for i in range(1,len(self.network.layers))]
+    self.gradientToWeights = [None] + [np.zeros(self.network.weights[i].shape) for i in range(1,len(self.network.layers))]
+    return self
 
-  def batchBackPropagation(self,inputOutputBatch):
+  def evaluateCostFunction(self,func='MSE'):
+      C = 0
+      for dataPoint in self.dataSet: 
+        input, output = self.vectorizeInputOuput(dataPoint)
+        self.network.loadInput(input)
+        self.network.activate()
+        C += self.costFunction(self.network.getOutput(),output,func)
+      return C/len(self.dataSet)
+
+  def costFunction(self, prediction, output, func='MSE', prime=False):
+    if func == 'MSE':
+      if prime:
+        return prediction-output
+      else:
+        return 0.5*np.sum(np.square(prediction-output))
+    if func == 'CE':
+      if prime:
+        return (prediction-output)/(prediction*(1- prediction))
+      else:
+        return -np.sum(output*np.nan_to_num(np.log(prediction)) + (1-output)*np.nan_to_num(np.log(1-prediction)))
+
+
+  def batchBackPropagation2(self,inputOutputBatch):
     self.initializeWeightsBias()
 
     activations = [None]*len(self.network.activations)
     for i in range(0,len(activations)): #Initialize
-      activations[i] = np.empty((len(inputOutputBatch),self.network.activations[i].shape[0],self.network.activations[i].shape[1]))
+      activations[i] = np.zeros((len(inputOutputBatch),self.network.activations[i].shape[0],self.network.activations[i].shape[1]))
     
-    output = np.empty((len(inputOutputBatch),self.network.activations[-1].shape[0],self.network.activations[-1].shape[1]))
+    output = np.zeros((len(inputOutputBatch),self.network.activations[-1].shape[0],self.network.activations[-1].shape[1]))
     for i in range(0,len(inputOutputBatch)):
       inputVector, outputVector = self.vectorizeInputOuput(inputOutputBatch[i])
       self.network.loadInput(inputVector)
-      self.network.activate()
       output[i] = outputVector
+      self.network.activate()
       for l in range(1,len(activations)):
         activations[l][i] = self.network.activations[l]
-    
     self.gradientToBias[-1] =(activations[-1]-output)*(activations[-1]-np.square(activations[-1]))
     for i in range(2,len(self.network.layers)):
       self.gradientToBias[-i] = np.tensordot(self.gradientToBias[-i+1],self.network.weights[-i+1],axes= ((1),(0))).transpose(0,2,1)*(activations[-i]-np.square(activations[-i]))
@@ -39,10 +62,37 @@ class NeuralNetworkTrainer:
       self.gradientToWeights[i] = np.einsum('ijk,ilm->ijl',self.gradientToBias[i],activations[i-1])
     return self.network
 
-  def update(self):
+#############
+  def batchBackPropagation(self, inputOutputBatch,func):
+    self.initializeWeightsBias()
+    for i in range(0,len(inputOutputBatch)):
+      gradientToWeights, gradientToBias = self.backPropagation(inputOutputBatch[i],func)
+      for l in range(1,len(self.network.layers)):
+        self.gradientToWeights[l] += gradientToWeights[l]
+        self.gradientToBias[l] += gradientToBias[l]
+    return self.network
+
+  def backPropagation(self,inputOutputDatapoint,func):
+    gradientToBias = [None]*len(self.network.layers)
+    gradientToWeights = [None]*len(self.network.layers)
+    input, output = self.vectorizeInputOuput(inputOutputDatapoint)
+    self.network.loadInput(input)
+    self.network.activate()
+    gradientToBias[-1] = np.multiply(self.costFunction(self.network.getOutput(),output,func,True),(self.network.getOutput()-np.square(self.network.getOutput())))
+    for i in range(2,len(self.network.layers)):
+      gradientToBias[-i] = np.multiply(np.dot(self.network.weights[-i+1].transpose(),gradientToBias[-i+1]),(self.network.activations[-i]-np.square(self.network.activations[-i])))
     for i in range(1,len(self.network.layers)):
-      self.network.weights[i] -= self.eta*np.sum(self.gradientToWeights[i],axis =0)
-      self.network.bias[i] -= self.eta*np.sum(self.gradientToBias[i], axis = 0)
+      gradientToWeights[i] = np.dot(gradientToBias[i],self.network.activations[i-1].transpose())
+    
+    return gradientToWeights, gradientToBias
+###########
+
+  def update(self, miniBatchSize):
+    for i in range(1,len(self.network.layers)):
+      self.network.weights[i] -= (self.eta/miniBatchSize)*self.gradientToWeights[i]
+      self.network.bias[i] -= (self.eta/miniBatchSize)*self.gradientToBias[i]
+      #self.network.weights[i] -= (self.eta/miniBatchSize)*np.sum(self.gradientToWeights[i],axis =0)
+      #self.network.bias[i] -= (self.eta/miniBatchSize)*np.sum(self.gradientToBias[i], axis = 0)
     return self.network
 
   def shuffleData(self):
@@ -60,7 +110,7 @@ class NeuralNetworkTrainer:
   def vectorizeInputOuput(self,inputOutputData):
     return inputOutputData.input.flatten().reshape((-1,1)), self.mapOutputToVector(inputOutputData.output)
 
-  def train(self,epochs,miniBatchSize,eta):
+  def train(self,epochs,miniBatchSize,eta,func='MSE'):
     self.eta = eta
     print("Training data: ", str(len(self.dataSet)), " datapoints")
     print("Training starting...")
@@ -68,13 +118,17 @@ class NeuralNetworkTrainer:
     for i in range(0,epochs):
       self.shuffleData()
       for j in range(0,len(self.dataSet)//miniBatchSize):
-        self.batchBackPropagation(self.createMiniBatch(miniBatchSize,j))
-        self.update()
+        self.batchBackPropagation(self.createMiniBatch(miniBatchSize,j),func)
+        self.update(miniBatchSize)
         print("Epoch:", str(len(self.validationAccuracy)+1), ", batch:", str(j+1), "of" , str(len(self.dataSet)//miniBatchSize))
       print("Validating...")
       correctOutputs, dataSetLength = self.validator.validate()
       print("Finished Validation with " + str(round(correctOutputs*100/dataSetLength,2)) + " accuracy.")
       self.validationAccuracy.append(round(correctOutputs/dataSetLength,4))
+      print("Calculating current cost...")
+      cost = self.evaluateCostFunction(func)
+      print("Current cost: " + str(cost))
+      self.costs.append(cost)
     endTime = time.time()
     print("Training finished:", round(endTime - startTime), "seconds")
     self.displayResults()
@@ -85,19 +139,18 @@ class NeuralNetworkTrainer:
     return self.network
 
   def displayResults(self):
-    plt.plot(self.validationAccuracy)
+    fig = plt.figure()
+    ax1 = fig.add_subplot(211)
+    ax2 = fig.add_subplot(212)
+    ax1.set_xlabel('Epochs')
+    ax1.set_ylabel('Accuracy')
+    ax1.set_title('Accuracy on validation set')
+    ax2.set_xlabel('Epochs')
+    ax2.set_ylabel('Cost')
+    ax2.set_title('Cost on training set')
+    ax1.plot(self.validationAccuracy)
+    ax2.plot(self.costs)
     plt.show()
     return self.network
   
 
-#def backPropagation(self,input,output):
-    # self.initializeWeightsBias()
-    # self.network.loadInput(input)
-    # self.network.activate()
-
-    # self.gradientToBias[-1] = np.multiply((self.network.activations[-1]-output),(self.network.activations[-1]-np.square(self.network.activations[-1])))
-    # for i in range(2,len(self.network.layers)):
-    #     self.gradientToBias[-i] = np.dot(self.network.weights[-i+1].transpose(),self.gradientToBias[-i+1])*(self.network.activations[-i]-self.network.activations[-i]**2)
-    # for i in range(1,len(self.network.layers)):
-    #   self.gradientToWeights[i] = np.dot(self.gradientToBias[i],self.network.activations[i-1].transpose())
-    # return self.network

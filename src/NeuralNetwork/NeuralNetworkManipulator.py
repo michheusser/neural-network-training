@@ -22,10 +22,10 @@ class NeuralNetworkManipulator:
   def test(self, input):
     return self.classifier.evaluate(input)
   
-  def train(self, trainingDataPath,epochs,miniBatchSize,eta, validationDataPath):
+  def train(self, trainingDataPath,epochs,miniBatchSize,eta, validationDataPath,func):
     self.validator.loadDataFile(validationDataPath)
     self.trainer.loadDataFile(trainingDataPath)
-    self.trainer.train(epochs,miniBatchSize,eta)
+    self.trainer.train(epochs,miniBatchSize,eta,func)
     return self.network
   
   def validate(self, validationDataPath):
@@ -33,11 +33,12 @@ class NeuralNetworkManipulator:
     return self.validator.validate()
   
   def importFiles(self,sourcePath):
-    layers, outputMap, weights, bias, accuracy = self.loadFiles(sourcePath)
+    layers, outputMap, weights, bias, accuracy, costs= self.loadFiles(sourcePath)
     self.create(layers,outputMap)
     self.network.weights = weights
     self.network.bias = bias
     self.trainer.validationAccuracy = accuracy
+    self.trainer.costs = costs
     return self.network
 
   def loadFiles(self,sourcePath):
@@ -46,7 +47,8 @@ class NeuralNetworkManipulator:
     weights = pickle.load(open(sourcePath + "/weights.p","rb"))
     bias = pickle.load(open(sourcePath + "/bias.p","rb"))
     accuracy = pickle.load(open(sourcePath + "/accuracy.p","rb"))
-    return layers, outputMap, weights, bias, accuracy
+    costs = pickle.load(open(sourcePath + "/costs.p","rb"))
+    return layers, outputMap, weights, bias, accuracy, costs
 
   def exportFiles(self, destinationPath):
     print("Saving neural network...")
@@ -57,6 +59,7 @@ class NeuralNetworkManipulator:
     print("Neural Network saved to: " + destinationPath)
     print("Saving training information...")
     pickle.dump(self.trainer.validationAccuracy, open(destinationPath + "/accuracy.p", 'wb'))
+    pickle.dump(self.trainer.costs, open(destinationPath + "/costs.p", 'wb'))
     print("Training information saved to" + destinationPath)
     return self
 
