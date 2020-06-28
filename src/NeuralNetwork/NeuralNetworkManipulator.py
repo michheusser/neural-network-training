@@ -12,8 +12,8 @@ class NeuralNetworkManipulator:
     self.validator = None if self.network == None else NeuralNetworkValidator(self.network)
     self.trainer = None if self.network == None else NeuralNetworkTrainer(self.network, self.validator)
     
-  def create(self, layers, outputMap):
-    self.network = NeuralNetwork(layers = layers, value='randn', outputMap = outputMap, manipulator=self) 
+  def create(self, layers, outputMap, activation):
+    self.network = NeuralNetwork(layers = layers, value='randn', outputMap = outputMap, manipulator=self,activation=activation) 
     self.classifier = NeuralNetworkClassifier(self.network)
     self.validator = NeuralNetworkValidator(self.network)
     self.trainer = NeuralNetworkTrainer(self.network, self.validator)

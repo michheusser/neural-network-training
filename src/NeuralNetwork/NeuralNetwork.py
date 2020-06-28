@@ -2,11 +2,12 @@ import numpy as np
 #from .NeuralNetworkManipulator import NeuralNetworkManipulator
 
 class NeuralNetwork:
-  def __init__(self,layers, value=0, outputMap = '', manipulator = None):
+  def __init__(self,layers, value=0, outputMap = '', manipulator = None, activation = 'sigmoid'):
     self.layers = layers
     self.outputMap = outputMap
     self.initialize(value)
     self.manipulator = manipulator
+    self.activation = activation
   
   @property
   def layers(self):
@@ -40,7 +41,10 @@ class NeuralNetwork:
     return self
     
   def activationFunction(self,x,prime=False):
-    sigma = 1/(1+np.exp(-x)) 
+    if self.activation == 'sigmoid':
+      sigma = 1/(1+np.exp(-x))
+    elif self.activation == 'softmax':
+      sigma = np.exp(x)/np.sum(np.exp(x))
     return sigma if not prime else sigma-sigma**2
 
   def loadInput(self,input):
