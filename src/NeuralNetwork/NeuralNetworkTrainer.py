@@ -55,9 +55,11 @@ class NeuralNetworkTrainer:
     input, output = self.vectorizeInputOuput(inputOutputDatapoint)
     self.network.loadInput(input)
     self.network.activate()
-    gradientToBias[-1] = np.multiply(self.costFunction(self.network.getOutput(),output,func,True),(self.network.getOutput()-np.square(self.network.getOutput())))
+    #gradientToBias[-1] = np.multiply(self.costFunction(self.network.getOutput(),output,func,True),(self.network.getOutput()-np.square(self.network.getOutput())))
+    gradientToBias[-1] = np.multiply(self.costFunction(self.network.getOutput(),output,func,True),self.network.activationFunction(self.network.weightedInputs[-1],True))
     for i in range(2,len(self.network.layers)):
-      gradientToBias[-i] = np.multiply(np.dot(self.network.weights[-i+1].transpose(),gradientToBias[-i+1]),(self.network.activations[-i]-np.square(self.network.activations[-i])))
+      #gradientToBias[-i] = np.multiply(np.dot(self.network.weights[-i+1].transpose(),gradientToBias[-i+1]),(self.network.activations[-i]-np.square(self.network.activations[-i])))
+      gradientToBias[-i] = np.multiply(np.dot(self.network.weights[-i+1].transpose(),gradientToBias[-i+1]),self.network.activationFunction(self.network.weightedInputs[-i],True))
     for i in range(1,len(self.network.layers)):
       gradientToWeights[i] = np.dot(gradientToBias[i],self.network.activations[i-1].transpose())
     return gradientToWeights, gradientToBias

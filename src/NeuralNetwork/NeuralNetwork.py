@@ -34,6 +34,7 @@ class NeuralNetwork:
       self.bias = [None] + [np.full((self.layers[i],1),value) for i in range(1,len(self.layers))]
     
     self.activations = [np.zeros((self.layers[i],1)) for i in range(0,len(self.layers))]
+    self.weightedInputs = [None] + [np.zeros((self.layers[i],1)) for i in range(1,len(self.layers))]
     return self
 
   def loadOutputMap(self, outputMap):
@@ -45,7 +46,7 @@ class NeuralNetwork:
       sigma = 1/(1+np.exp(-x))
     elif self.activation == 'softmax':
       sigma = np.exp(x)/np.sum(np.exp(x))
-    return sigma if not prime else sigma-sigma**2
+    return sigma if not prime else sigma-np.square(sigma)
 
   def loadInput(self,input):
     if type(input) != np.ndarray or input.shape[1] != 1 or input.shape[0] != self.layers[0]:
@@ -59,5 +60,6 @@ class NeuralNetwork:
 
   def activate(self):
     for i in range(1,len(self.activations)):
-        self.activations[i] = self.activationFunction(np.dot(self.weights[i],self.activations[i-1])+self.bias[i])
+        self.weightedInputs[i] = np.dot(self.weights[i],self.activations[i-1])+self.bias[i]
+        self.activations[i] = self.activationFunction(self.weightedInputs[i])
     return self

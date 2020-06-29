@@ -5,13 +5,17 @@ from NeuralNetwork.NeuralNetworkManipulator import NeuralNetworkManipulator
 # testingSetPath = "/Users/michelsmacbookpro/Desktop/Projects/Symbol Images/CompleteDataSet_small_testing.npy"
 # neuralNetworkFile = "/Users/michelsmacbookpro/Desktop/Projects/neural-network-training/src/Saved Network"
 
-trainingSetPath = "/Users/michelsmacbookpro/Desktop/Projects/Symbol Images/CompleteDataSet_training.npy"
-validationSetPath = "/Users/michelsmacbookpro/Desktop/Projects/Symbol Images/CompleteDataSet_validation.npy"
-testingSetPath = "/Users/michelsmacbookpro/Desktop/Projects/Symbol Images/CompleteDataSet_testing.npy"
+trainingSetPath = "/Users/michelsmacbookpro/Desktop/Projects/Symbol Images/CompleteDataSet_small_training.npy"
+validationSetPath = "/Users/michelsmacbookpro/Desktop/Projects/Symbol Images/CompleteDataSet_small_validation.npy"
+testingSetPath = "/Users/michelsmacbookpro/Desktop/Projects/Symbol Images/CompleteDataSet_small_testing.npy"
 neuralNetworkFile = "/Users/michelsmacbookpro/Desktop/Projects/neural-network-training/src/Saved Network"
 outputMap = '0123456789+-*%[]'
 layers = (784,45,16)
-#neuralNetwork = NeuralNetworkManipulator().create(layers, outputMap,'sigmoid')
-neuralNetwork = NeuralNetworkManipulator().importFiles(neuralNetworkFile,'sigmoid')
-neuralNetwork.manipulator.train(trainingDataPath=trainingSetPath, epochs=10, miniBatchSize=20,eta=3, validationDataPath=validationSetPath,func='MSE', calculateCost=False)
-neuralNetwork.manipulator.exportFiles(neuralNetworkFile)
+lmbda = 5.0
+eta = 0.1
+
+learningType = [('sigmoid','MSE'),('softmax','CE')]
+neuralNetwork = NeuralNetworkManipulator().create(layers, outputMap,learningType[1][0])
+#neuralNetwork = NeuralNetworkManipulator().importFiles(neuralNetworkFile,'sigmoid')
+neuralNetwork.manipulator.train(trainingDataPath=trainingSetPath, epochs=20, miniBatchSize=20,eta=0.1, validationDataPath=validationSetPath,func=learningType[1][1], calculateCost=False)
+#neuralNetwork.manipulator.exportFiles(neuralNetworkFile)
