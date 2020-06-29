@@ -18,7 +18,7 @@ class NeuralNetworkTrainer:
     self.gradientToWeights = [None] + [np.zeros(self.network.weights[i].shape) for i in range(1,len(self.network.layers))]
     return self
 
-  def evaluateCostFunction(self,func='MSE'):
+  def evaluateCostFunction(self,func):
       C = 0
       for dataPoint in self.dataSet: 
         input, output = self.vectorizeInputOuput(dataPoint)
@@ -27,7 +27,7 @@ class NeuralNetworkTrainer:
         C += self.costFunction(self.network.getOutput(),output,func)
       return C/len(self.dataSet)
 
-  def costFunction(self, prediction, output, func='MSE', prime=False):
+  def costFunction(self, prediction, output, func, prime=False):
     if func == 'MSE':
       if prime:
         return prediction-output
@@ -85,7 +85,7 @@ class NeuralNetworkTrainer:
   def vectorizeInputOuput(self,inputOutputData):
     return inputOutputData.input.flatten().reshape((-1,1)), self.mapOutputToVector(inputOutputData.output)
 
-  def train(self,epochs,miniBatchSize,eta,func='MSE',calculateCost=False):
+  def train(self,epochs,miniBatchSize,eta,func,calculateCost):
     self.eta = eta
     print("Training data: ", str(len(self.dataSet)), " datapoints")
     print("Training starting...")
@@ -100,7 +100,7 @@ class NeuralNetworkTrainer:
       correctOutputs, dataSetLength = self.validator.validate()
       print("Finished Validation with " + str(round(correctOutputs*100/dataSetLength,2)) + " accuracy.")
       self.validationAccuracy.append(round(correctOutputs/dataSetLength,4))
-      if not calculateCost:
+      if calculateCost:
         print("Calculating current cost...")
         cost = self.evaluateCostFunction(func)
         print("Current cost: " + str(cost))

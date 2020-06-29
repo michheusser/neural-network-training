@@ -32,9 +32,9 @@ class NeuralNetworkManipulator:
     self.validator.loadDataFile(validationDataPath)
     return self.validator.validate()
   
-  def importFiles(self,sourcePath):
+  def importFiles(self,sourcePath,activation):
     layers, outputMap, weights, bias, accuracy, costs= self.loadFiles(sourcePath)
-    self.create(layers,outputMap)
+    self.create(layers,outputMap,activation)
     self.network.weights = weights
     self.network.bias = bias
     self.trainer.validationAccuracy = accuracy

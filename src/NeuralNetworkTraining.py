@@ -1,13 +1,17 @@
 from NeuralNetwork.NeuralNetworkManipulator import NeuralNetworkManipulator
 
-trainingSetPath = "/Users/michelsmacbookpro/Desktop/Projects/Symbol Images/CompleteDataSet_small_training.npy"
-validationSetPath = "/Users/michelsmacbookpro/Desktop/Projects/Symbol Images/CompleteDataSet_small_validation.npy"
-testingSetPath = "/Users/michelsmacbookpro/Desktop/Projects/Symbol Images/CompleteDataSet_small_testing.npy"
-neuralNetworkFile = "/Users/michelsmacbookpro/Desktop/Projects/neural-network-training/src/Saved Network"
+# trainingSetPath = "/Users/michelsmacbookpro/Desktop/Projects/Symbol Images/CompleteDataSet_small_training.npy"
+# validationSetPath = "/Users/michelsmacbookpro/Desktop/Projects/Symbol Images/CompleteDataSet_small_validation.npy"
+# testingSetPath = "/Users/michelsmacbookpro/Desktop/Projects/Symbol Images/CompleteDataSet_small_testing.npy"
+# neuralNetworkFile = "/Users/michelsmacbookpro/Desktop/Projects/neural-network-training/src/Saved Network"
 
+trainingSetPath = "/Users/michelsmacbookpro/Desktop/Projects/Symbol Images/CompleteDataSet_training.npy"
+validationSetPath = "/Users/michelsmacbookpro/Desktop/Projects/Symbol Images/CompleteDataSet_validation.npy"
+testingSetPath = "/Users/michelsmacbookpro/Desktop/Projects/Symbol Images/CompleteDataSet_testing.npy"
+neuralNetworkFile = "/Users/michelsmacbookpro/Desktop/Projects/neural-network-training/src/Saved Network"
 outputMap = '0123456789+-*%[]'
 layers = (784,45,16)
-neuralNetwork = NeuralNetworkManipulator().create(layers, outputMap,'softmax')
-#neuralNetwork = NeuralNetworkManipulator().importFiles(neuralNetworkFile)
-neuralNetwork.manipulator.train(trainingDataPath=trainingSetPath,epochs=20,miniBatchSize=200,eta=3, validationDataPath = validationSetPath,func = 'CE',calculateCost = False)
+#neuralNetwork = NeuralNetworkManipulator().create(layers, outputMap,'sigmoid')
+neuralNetwork = NeuralNetworkManipulator().importFiles(neuralNetworkFile,'sigmoid')
+neuralNetwork.manipulator.train(trainingDataPath=trainingSetPath, epochs=10, miniBatchSize=20,eta=3, validationDataPath=validationSetPath,func='MSE', calculateCost=False)
 neuralNetwork.manipulator.exportFiles(neuralNetworkFile)
