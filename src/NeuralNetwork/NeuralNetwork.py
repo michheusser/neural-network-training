@@ -45,7 +45,8 @@ class NeuralNetwork:
     if self.activation == 'sigmoid':
       sigma = 1/(1+np.exp(-x))
     elif self.activation == 'softmax':
-      sigma = np.exp(x)/np.sum(np.exp(x))
+      xExp = np.exp(x-np.max(x))
+      sigma = xExp/np.sum(xExp)
     return sigma if not prime else sigma-np.square(sigma)
 
   def loadInput(self,input):

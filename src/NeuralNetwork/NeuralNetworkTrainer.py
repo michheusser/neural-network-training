@@ -7,11 +7,13 @@ class NeuralNetworkTrainer:
   def __init__(self, neuralNetwork,validator):
     self.network = neuralNetwork
     self.eta = 0
+    self.gamma = 0
     self.dataSet = []
     self.initializeWeightsBias()
     self.validator = validator
     self.validationAccuracy = []
     self.costs = []
+    self.singleValidationAccuracies = [[]]*len(self.network.outputMap)
     
   def initializeWeightsBias(self):
     self.gradientToBias = [None] +[np.zeros(self.network.bias[i].shape) for i in range(1,len(self.network.layers))]
@@ -24,20 +26,20 @@ class NeuralNetworkTrainer:
         input, output = self.vectorizeInputOuput(dataPoint)
         self.network.loadInput(input)
         self.network.activate()
-        C += self.costFunction(self.network.getOutput(),output,func)
+        C += self.costFunction(self.network.getOutput(),output,func,False,self.gamma)
       return C/len(self.dataSet)
 
-  def costFunction(self, prediction, output, func, prime=False):
+  def costFunction(self, prediction, output, func, prime=False, gamma=0):
     if func == 'MSE':
       if prime:
         return prediction-output
       else:
-        return 0.5*np.sum(np.square(prediction-output))
+        return 0.5*np.sum(np.square(prediction-output)) + 0.5*gamma*self.calculateWeightSum()
     if func == 'CE':
       if prime:
         return (prediction-output)
       else:
-        return -np.sum(np.multiply(output,np.log(prediction)))
+        return -1*np.sum(np.multiply(output,np.log(prediction))) + 0.5*gamma*self.calculateWeightSum()
         #-np.sum(output*np.nan_to_num(np.log(prediction)) + (1-output)*np.nan_to_num(np.log(1-prediction)))
 
   def batchBackPropagation(self, inputOutputBatch,func):
@@ -66,10 +68,11 @@ class NeuralNetworkTrainer:
 
   def update(self, miniBatchSize):
     for i in range(1,len(self.network.layers)):
-      self.network.weights[i] -= (self.eta/miniBatchSize)*self.gradientToWeights[i]
+      #self.network.weights[i] -= (self.eta/miniBatchSize)*self.gradientToWeights[i]
+      #self.network.bias[i] -= (self.eta/miniBatchSize)*self.gradientToBias[i]
+      self.network.weights[i] = self.network.weights[i]*(1-self.eta*self.gamma/miniBatchSize) - (self.eta/miniBatchSize)*self.gradientToWeights[i]
       self.network.bias[i] -= (self.eta/miniBatchSize)*self.gradientToBias[i]
-      #self.network.weights[i] -= (self.eta/miniBatchSize)*np.sum(self.gradientToWeights[i],axis =0)
-      #self.network.bias[i] -= (self.eta/miniBatchSize)*np.sum(self.gradientToBias[i], axis = 0)
+
     return self.network
 
   def shuffleData(self):
@@ -87,8 +90,9 @@ class NeuralNetworkTrainer:
   def vectorizeInputOuput(self,inputOutputData):
     return inputOutputData.input.flatten().reshape((-1,1)), self.mapOutputToVector(inputOutputData.output)
 
-  def train(self,epochs,miniBatchSize,eta,func,calculateCost):
+  def train(self,epochs,miniBatchSize,eta,func,calculateCost, gamma):
     self.eta = eta
+    self.gamma = gamma
     print("Training data: ", str(len(self.dataSet)), " datapoints")
     print("Training starting...")
     startTime = time.time()
@@ -99,9 +103,9 @@ class NeuralNetworkTrainer:
         self.update(miniBatchSize)
         print("Epoch:", str(len(self.validationAccuracy)+1), ", batch:", str(j+1), "of" , str(len(self.dataSet)//miniBatchSize))
       print("Validating...")
-      correctOutputs, dataSetLength = self.validator.validate()
-      print("Finished Validation with " + str(round(correctOutputs*100/dataSetLength,2)) + " accuracy.")
-      self.validationAccuracy.append(round(correctOutputs/dataSetLength,4))
+      correctOutputs, dataSetLengths = self.validator.validate()
+      print("Finished Validation with " + str(round(sum(correctOutputs)*100/sum(dataSetLengths),2)) + " %" + " accuracy.")
+      self.updateAccuracies(correctOutputs,dataSetLengths,display=True)
       if calculateCost:
         print("Calculating current cost...")
         cost = self.evaluateCostFunction(func)
@@ -112,24 +116,50 @@ class NeuralNetworkTrainer:
     self.displayResults()
     return self.network
 
+  def updateAccuracies(self,correctOutputs,dataSetLengths, display=False):
+    self.validationAccuracy.append(round(sum(correctOutputs)/sum(dataSetLengths),4))
+    for output in self.network.outputMap:
+      index = self.network.outputMap.index(output)
+      self.singleValidationAccuracies[index] =self.singleValidationAccuracies[index] +[round(correctOutputs[index]/dataSetLengths[index],4)]
+      if display:
+        print('Accuracy of ' + output + ": " + str(round(correctOutputs[index]*100/dataSetLengths[index],2))+ "%")
+    return self.network
+    
   def loadDataFile(self, sourcePath):
     self.dataSet = np.load(sourcePath)
     return self.network
 
   def displayResults(self):
     fig = plt.figure()
-    ax1 = fig.add_subplot(211)
-    ax2 = fig.add_subplot(212)
+    ax1 = fig.add_subplot(311)
+    ax2 = fig.add_subplot(312)
+    ax3 = fig.add_subplot(313)
     ax1.set_xlabel('Epochs')
     ax1.set_ylabel('Accuracy')
-    ax1.set_title('Accuracy on validation set')
+    #ax1.set_title('Accuracy on validation set')
     ax2.set_xlabel('Epochs')
-    ax2.set_ylabel('Cost')
-    ax2.set_title('Cost on training set')
+    ax2.set_ylabel('Accuracy')
+    #ax2.set_title('Accuracy on validation set')
+    ax3.set_xlabel('Epochs')
+    ax3.set_ylabel('Cost')
+    #ax3.set_title('Cost on training set')
     ax1.plot(self.validationAccuracy)
-    ax2.plot(self.costs)
+    for output in self.network.outputMap:
+      index = self.network.outputMap.index(output)
+      ax2.plot(self.singleValidationAccuracies[index],label=output)
+    ax2.legend(fontsize='small', ncol=len(self.network.outputMap),loc = 'lower left')
+    ax3.plot(self.costs)
+    ax1.autoscale(enable=True, axis='x', tight=True)
+    ax2.autoscale(enable=True, axis='x', tight=True)
+    ax3.autoscale(enable=True, axis='x', tight=True)
     plt.show()
     return self.network
+  
+  def calculateWeightSum(self):
+    sumW = 0
+    for i in range(1,len(self.network.layers)):
+      sumW += np.sum(self.network.weights[i],axis=(0,1))
+    return sumW
   
 # def batchBackPropagation2(self,inputOutputBatch):
 #     self.initializeWeightsBias()

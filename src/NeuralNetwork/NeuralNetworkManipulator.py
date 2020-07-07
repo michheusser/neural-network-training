@@ -1,5 +1,6 @@
 import numpy as np
 import pickle
+import json
 from .NeuralNetworkTrainer import NeuralNetworkTrainer
 from .NeuralNetworkValidator import NeuralNetworkValidator
 from .NeuralNetworkClassifier import NeuralNetworkClassifier
@@ -22,10 +23,10 @@ class NeuralNetworkManipulator:
   def test(self, input):
     return self.classifier.evaluate(input)
   
-  def train(self, trainingDataPath,epochs,miniBatchSize,eta, validationDataPath,func,calculateCost):
+  def train(self, trainingDataPath,epochs,miniBatchSize,eta, validationDataPath,func,calculateCost,gamma):
     self.validator.loadDataFile(validationDataPath)
     self.trainer.loadDataFile(trainingDataPath)
-    self.trainer.train(epochs,miniBatchSize,eta,func,calculateCost)
+    self.trainer.train(epochs,miniBatchSize,eta,func,calculateCost,gamma)
     return self.network
   
   def validate(self, validationDataPath):
@@ -33,12 +34,13 @@ class NeuralNetworkManipulator:
     return self.validator.validate()
   
   def importFiles(self,sourcePath,activation):
-    layers, outputMap, weights, bias, accuracy, costs= self.loadFiles(sourcePath)
+    layers, outputMap, weights, bias, accuracy, costs, singleAccuracies= self.loadFiles(sourcePath)
     self.create(layers,outputMap,activation)
     self.network.weights = weights
     self.network.bias = bias
     self.trainer.validationAccuracy = accuracy
     self.trainer.costs = costs
+    self.trainer.singleValidationAccuracies = singleAccuracies
     return self.network
 
   def loadFiles(self,sourcePath):
@@ -48,7 +50,8 @@ class NeuralNetworkManipulator:
     bias = pickle.load(open(sourcePath + "/bias.p","rb"))
     accuracy = pickle.load(open(sourcePath + "/accuracy.p","rb"))
     costs = pickle.load(open(sourcePath + "/costs.p","rb"))
-    return layers, outputMap, weights, bias, accuracy, costs
+    singleAccuracies = pickle.load(open(sourcePath + "/singleAccuracies.p","rb"))
+    return layers, outputMap, weights, bias, accuracy, costs, singleAccuracies
 
   def exportFiles(self, destinationPath):
     print("Saving neural network...")
@@ -59,9 +62,18 @@ class NeuralNetworkManipulator:
     print("Neural Network saved to: " + destinationPath)
     print("Saving training information...")
     pickle.dump(self.trainer.validationAccuracy, open(destinationPath + "/accuracy.p", 'wb'))
+    pickle.dump(self.trainer.singleValidationAccuracies, open(destinationPath + "/singleAccuracies.p", 'wb'))
     pickle.dump(self.trainer.costs, open(destinationPath + "/costs.p", 'wb'))
     print("Training information saved to" + destinationPath)
     return self
+
+  def numpyToList(self,numpyArray):
+    pass
+
+  def exportToJSON(self,destinationPath):
+    print("Exporting neural network to JSON")
+
+
 
   
   

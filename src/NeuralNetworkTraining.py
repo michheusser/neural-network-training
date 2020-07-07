@@ -1,21 +1,30 @@
 from NeuralNetwork.NeuralNetworkManipulator import NeuralNetworkManipulator
 
-# trainingSetPath = "/Users/michelsmacbookpro/Desktop/Projects/Symbol Images/CompleteDataSet_small_training.npy"
-# validationSetPath = "/Users/michelsmacbookpro/Desktop/Projects/Symbol Images/CompleteDataSet_small_validation.npy"
-# testingSetPath = "/Users/michelsmacbookpro/Desktop/Projects/Symbol Images/CompleteDataSet_small_testing.npy"
+trainingSetPath = "/Users/michelsmacbookpro/Desktop/Projects/Symbol Images/CompleteDataSet_training.npy"
+validationSetPath = "/Users/michelsmacbookpro/Desktop/Projects/Symbol Images/CompleteDataSet_validation.npy"
+testingSetPath = "/Users/michelsmacbookpro/Desktop/Projects/Symbol Images/CompleteDataSet_testing.npy"
+neuralNetworkFile = "/Users/michelsmacbookpro/Desktop/Projects/neural-network-training/src/Saved Network"
+
+# trainingSetPath = "/Users/michelsmacbookpro/Desktop/Projects/Symbol Images/CompleteDataSet_extended_training.npy"
+# validationSetPath = "/Users/michelsmacbookpro/Desktop/Projects/Symbol Images/CompleteDataSet_extended_validation.npy"
+# testingSetPath = "/Users/michelsmacbookpro/Desktop/Projects/Symbol Images/CompleteDataSet_extended_testing.npy"
 # neuralNetworkFile = "/Users/michelsmacbookpro/Desktop/Projects/neural-network-training/src/Saved Network"
 
-trainingSetPath = "/Users/michelsmacbookpro/Desktop/Projects/Symbol Images/CompleteDataSet_small_training.npy"
-validationSetPath = "/Users/michelsmacbookpro/Desktop/Projects/Symbol Images/CompleteDataSet_small_validation.npy"
-testingSetPath = "/Users/michelsmacbookpro/Desktop/Projects/Symbol Images/CompleteDataSet_small_testing.npy"
-neuralNetworkFile = "/Users/michelsmacbookpro/Desktop/Projects/neural-network-training/src/Saved Network"
+#trainingSetPath = "/Users/michelsmacbookpro/Desktop/Projects/Symbol Images/CompleteDataSet_small_training.npy"
+#validationSetPath = "/Users/michelsmacbookpro/Desktop/Projects/Symbol Images/CompleteDataSet_small_validation.npy"
+#testingSetPath = "/Users/michelsmacbookpro/Desktop/Projects/Symbol Images/CompleteDataSet_small_testing.npy"
+#neuralNetworkFile = "/Users/michelsmacbookpro/Desktop/Projects/neural-network-training/src/Saved Network (Small)"
+
 outputMap = '0123456789+-*%[]'
-layers = (784,45,16)
-lmbda = 5.0
-eta = 0.1
+layers = (784,64,32,16)
+#layers = (784,45,16)
+eta = 0.01
+#gamma = 0.000001
+gamma = 0.001
 
 learningType = [('sigmoid','MSE'),('softmax','CE')]
-neuralNetwork = NeuralNetworkManipulator().create(layers, outputMap,learningType[1][0])
-#neuralNetwork = NeuralNetworkManipulator().importFiles(neuralNetworkFile,'sigmoid')
-neuralNetwork.manipulator.train(trainingDataPath=trainingSetPath, epochs=20, miniBatchSize=20,eta=0.1, validationDataPath=validationSetPath,func=learningType[1][1], calculateCost=False)
-#neuralNetwork.manipulator.exportFiles(neuralNetworkFile)
+a = 0
+#neuralNetwork = NeuralNetworkManipulator().create(layers, outputMap,learningType[a][0])
+neuralNetwork = NeuralNetworkManipulator().importFiles(neuralNetworkFile,learningType[a][0])
+neuralNetwork.manipulator.train(trainingDataPath=trainingSetPath, epochs=50, miniBatchSize=20,eta=eta, validationDataPath=validationSetPath,func=learningType[a][1], calculateCost=False, gamma = gamma)
+neuralNetwork.manipulator.exportFiles(neuralNetworkFile)
