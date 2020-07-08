@@ -18,13 +18,13 @@ neuralNetworkFile = "/Users/michelsmacbookpro/Desktop/Projects/neural-network-tr
 outputMap = '0123456789+-*%[]'
 layers = (784,64,32,16)
 #layers = (784,45,16)
-eta = 0.01
+eta = 0.03
 #gamma = 0.000001
-gamma = 0.001
+gamma = 0.0001
 
 learningType = [('sigmoid','MSE'),('softmax','CE')]
 a = 0
 #neuralNetwork = NeuralNetworkManipulator().create(layers, outputMap,learningType[a][0])
 neuralNetwork = NeuralNetworkManipulator().importFiles(neuralNetworkFile,learningType[a][0])
-neuralNetwork.manipulator.train(trainingDataPath=trainingSetPath, epochs=50, miniBatchSize=20,eta=eta, validationDataPath=validationSetPath,func=learningType[a][1], calculateCost=False, gamma = gamma)
+neuralNetwork.manipulator.train(trainingDataPath=trainingSetPath, epochs=30, miniBatchSize=20,eta=eta, validationDataPath=validationSetPath,func=learningType[a][1], calculateCost=False, gamma = gamma)
 neuralNetwork.manipulator.exportFiles(neuralNetworkFile)
