@@ -13,7 +13,6 @@ class ImageData:
         return ImageData(np.copy(self.data))
 
     def loadImage(self, path, greyScale = False):
-        #self.data = np.array(ImageOps.invert(Image.open(path)))
         self.data = np.array(ImageOps.invert(Image.open(path).convert('L')))
         self.normalizeData()
         self.cleanData()

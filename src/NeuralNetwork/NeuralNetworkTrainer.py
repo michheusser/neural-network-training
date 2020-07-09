@@ -111,9 +111,15 @@ class NeuralNetworkTrainer:
         cost = self.evaluateCostFunction(func)
         print("Current cost: " + str(cost))
         self.costs.append(cost)
+        ##
+      #  print(self.singleValidationAccuracies[1][-1])
+      #if self.singleValidationAccuracies[1][-1] > 0.94:
+      #  break
+      ##
     endTime = time.time()
     print("Training finished:", round(endTime - startTime), "seconds")
     self.displayResults()
+    
     return self.network
 
   def updateAccuracies(self,correctOutputs,dataSetLengths, display=False):
