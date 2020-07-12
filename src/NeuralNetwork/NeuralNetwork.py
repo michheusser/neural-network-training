@@ -1,5 +1,4 @@
 import numpy as np
-#from .NeuralNetworkManipulator import NeuralNetworkManipulator
 
 class NeuralNetwork:
   def __init__(self,layers, value=0, outputMap = '', manipulator = None, activation = 'sigmoid'):
