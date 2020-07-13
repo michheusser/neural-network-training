@@ -1,3 +1,7 @@
+# Copyright 2020, Michel Heusser
+# ALl rights reserved
+# https://github.com/michheusser
+
 from NeuralNetwork.NeuralNetworkManipulator import NeuralNetworkManipulator
 
 trainingSetPath = "/Users/michelsmacbookpro/Desktop/Projects/Symbol Images/CompleteDataSet_training.npy"

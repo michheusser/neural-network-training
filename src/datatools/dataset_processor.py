@@ -1,3 +1,7 @@
+# Copyright 2020, Michel Heusser
+# ALl rights reserved
+# https://github.com/michheusser
+
 import os
 import random
 import numpy as np
@@ -48,18 +52,28 @@ class DatasetProcessor:
                     self.addData(imageData.data,root.rpartition("/")[2])
                     counter += 1
                     print("Folder name: " + root.rpartition("/")[2] + ", files Processed: " + str(counter) + " of " + str(len(files)))
-        return self
-        
         print("Total Datapoints: " + str(len(self.dataSet)))
         if removeDuplicates:
             self.removeDuplicates()
         return self
 
-    def exportDataSet(self, destinationPath, dataSet=None):
+    def dataToTuple(self,dataSet=None):
         if dataSet:
-            np.save(destinationPath,dataSet)
+            return [dataPoint.toTuple() for dataPoint in dataSet]
         else:
-            np.save(destinationPath,self.dataSet)
+            return [dataPoint.toTuple() for dataPoint in self.dataSet]
+
+    def exportDataSet(self, destinationPath, dataSet=None, asTuple=False):
+        if dataSet:
+            if asTuple:
+                np.save(destinationPath,self.dataToTuple(dataSet))
+            else:
+                np.save(destinationPath,dataSet)
+        else:
+            if asTuple:
+                np.save(destinationPath,self.dataToTuple)
+            else:
+                np.save(destinationPath,self.dataSet)
         return self
 
     def generateArtificialData(self,symbol,xScaleList,yScaleList,rotationList,display = False, export = False):
@@ -208,14 +222,14 @@ class DatasetProcessor:
         self.dataSet = newDataSet
         return self
 
-    def createLearningSets(self, trainingSetPath, trainingSetLength, validationSetPath, validationSetLength, testingSetPath, shuffle = True):
+    def createLearningSets(self, trainingSetPath, trainingSetLength, validationSetPath, validationSetLength, testingSetPath, shuffle=True, asTuples=False):
         if shuffle:
             print("Shuffling dataset...")
             random.shuffle(self.dataSet)
             print("Dataset shuffled.")
-        self.exportDataSet(trainingSetPath,self.dataSet[0:math.floor(len(self.dataSet)*trainingSetLength)])
-        self.exportDataSet(validationSetPath,self.dataSet[math.floor(len(self.dataSet)*trainingSetLength):math.floor(len(self.dataSet)*(trainingSetLength+validationSetLength))])
-        self.exportDataSet(testingSetPath,self.dataSet[math.floor(len(self.dataSet)*(trainingSetLength+validationSetLength)):len(self.dataSet)])
+        self.exportDataSet(trainingSetPath,self.dataSet[0:math.floor(len(self.dataSet)*trainingSetLength)],asTuple=asTuples)
+        self.exportDataSet(validationSetPath,self.dataSet[math.floor(len(self.dataSet)*trainingSetLength):math.floor(len(self.dataSet)*(trainingSetLength+validationSetLength))],asTuple=asTuples)
+        self.exportDataSet(testingSetPath,self.dataSet[math.floor(len(self.dataSet)*(trainingSetLength+validationSetLength)):len(self.dataSet)],asTuple=asTuples)
         return self
     
     

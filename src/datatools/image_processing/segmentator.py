@@ -1,4 +1,8 @@
-import numpy as np
+# Copyright 2020, Michel Heusser
+# ALl rights reserved
+# https://github.com/michheusser
+
+mport numpy as np
 import math
 from .datapoint import ImageData
 

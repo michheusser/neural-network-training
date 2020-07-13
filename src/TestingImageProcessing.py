@@ -1,6 +1,10 @@
-from ImageProcessing.ImageData import ImageData
-from ImageProcessing.DatasetProcessor import DatasetProcessor
-from ImageProcessing.ImageSegmentator import ImageSegmentator
+# Copyright 2020, Michel Heusser
+# ALl rights reserved
+# https://github.com/michheusser
+
+from datatools.image_processing.datapoint import ImageData
+from datatools.dataset_processor import DatasetProcessor
+from datatools.image_processing.segmentator import ImageSegmentator
 import numpy as np
 
 path = "/Users/michelsmacbookpro/Desktop/Projects/neural-network-training/src/test.jpg"
@@ -82,7 +86,7 @@ path3 = "/Users/michelsmacbookpro/Desktop/Projects/neural-network-training/Image
 #sourcePath = "/Users/michelsmacbookpro/Desktop/Projects/neural-network-training/ImageData/0.png"
 #destinationPath = "/Users/michelsmacbookpro/Desktop/Projects/neural-network-training/ImageData/"
 
-#imageProcesor = DatasetProcessor().createScaledCopies([1,1.2,1.3], [1,1.2,1.3], sourcePath, destinationPath)
+#datasetProcesor = DatasetProcessor().createScaledCopies([1,1.2,1.3], [1,1.2,1.3], sourcePath, destinationPath)
 
 outputMap = '0123456789+-*%[]'
 

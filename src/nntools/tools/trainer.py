@@ -1,3 +1,7 @@
+# Copyright 2020, Michel Heusser
+# ALl rights reserved
+# https://github.com/michheusser
+
 import numpy as np
 import random as rd
 import time

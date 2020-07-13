@@ -1,3 +1,7 @@
+# Copyright 2020, Michel Heusser
+# ALl rights reserved
+# https://github.com/michheusser
+
 import numpy as np
 
 class InputOutputData:
@@ -16,3 +20,5 @@ class InputOutputData:
         return self.output >= other.output
     def __hash__(self):
         return hash((str(self.input.flatten()),self.output))
+    def toTuple(self):
+        return (self.input,self.output)
