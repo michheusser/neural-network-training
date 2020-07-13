@@ -2,7 +2,7 @@ import numpy as np
 import math
 from PIL import Image, ImageOps
 import matplotlib.pyplot as plt
-from .ImageManipulator import ImageManipulator 
+from .manipulator import ImageManipulator 
 
 class ImageData:
     def __init__(self, dataArray = None):

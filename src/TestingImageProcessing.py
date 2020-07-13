@@ -1,5 +1,5 @@
 from ImageProcessing.ImageData import ImageData
-from ImageProcessing.ImageProcessor import ImageProcessor
+from ImageProcessing.DatasetProcessor import DatasetProcessor
 from ImageProcessing.ImageSegmentator import ImageSegmentator
 import numpy as np
 
@@ -63,26 +63,26 @@ path3 = "/Users/michelsmacbookpro/Desktop/Projects/neural-network-training/Image
 #image = ImageData().loadImage(path2).manipulator.rotate(60,True,True,True).display()
 #image = ImageData().loadImage(path2).manipulator.rotate(60,True,True,False).display()
 
-#imageProcessor = ImageProcessor()
-#imageProcessor.segmentImage(path0)
-#imageProcessor.displayData()
+#datasetProcessor = DatasetProcessor()
+#datasetProcessor.segmentImage(path0)
+#datasetProcessor.displayData()
 
-#imageProcessor.removeSmallElements(20, True)
-#imageProcessor.displayData()
+#datasetProcessor.removeSmallElements(20, True)
+#datasetProcessor.displayData()
 
 
 #path3 = "/Users/michelsmacbookpro/Desktop/Projects/neural-network-training/ImageData/test3.png"
 #path3seg = "/Users/michelsmacbookpro/Desktop/Projects/neural-network-training/ImageData"
-#imageProcessor = ImageProcessor().segmentImage(path3, path3seg,False)
+#datasetProcessor = DatasetProcessor().segmentImage(path3, path3seg,False)
 
 #sourcePath = "/Users/michelsmacbookpro/Desktop/Projects/Symbol Images (Own Dataset)/Bulk Processed/0/0_3rotate20ccw.png"
 #destinationPath = "/Users/michelsmacbookpro/Desktop/Projects/Symbol Images (Own Dataset)/Bulk Processed/0/Characters"
-#imageProcessor = ImageProcessor().segmentImage(sourcePath, destinationPath,True)
+#datasetProcessor = DatasetProcessor().segmentImage(sourcePath, destinationPath,True)
 
 #sourcePath = "/Users/michelsmacbookpro/Desktop/Projects/neural-network-training/ImageData/0.png"
 #destinationPath = "/Users/michelsmacbookpro/Desktop/Projects/neural-network-training/ImageData/"
 
-#imageProcesor = ImageProcessor().createScaledCopies([1,1.2,1.3], [1,1.2,1.3], sourcePath, destinationPath)
+#imageProcesor = DatasetProcessor().createScaledCopies([1,1.2,1.3], [1,1.2,1.3], sourcePath, destinationPath)
 
 outputMap = '0123456789+-*%[]'
 
@@ -90,4 +90,4 @@ sourcePath = "/Users/michelsmacbookpro/Desktop/Symbol Images_Test/Single Files/"
 destinationPath = "/Users/michelsmacbookpro/Desktop/Symbol Images_Test/Scaled Files/"
 
 for char in outputMap:
-  imageProcessor = ImageProcessor().extendDataSet(sourcePath+char, destinationPath+char,[1,1.2,1.3], [1,1.2,1.3], '.png')
+  datasetProcessor = DatasetProcessor().extendDataSet(sourcePath+char, destinationPath+char,[1,1.2,1.3], [1,1.2,1.3], '.png')

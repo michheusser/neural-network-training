@@ -4,11 +4,11 @@ import numpy as np
 import math
 import matplotlib.pyplot as plt
 import functools
-from .ImageData import ImageData
-from .InputOutputData import InputOutputData
-from .ImageSegmentator import ImageSegmentator
+from .image_processing.datapoint import ImageData
+from .io_datapoint import InputOutputData
+from .image_processing.segmentator import ImageSegmentator
 
-class ImageProcessor:
+class DatasetProcessor:
     def __init__(self):
         self.dataSet = []
         

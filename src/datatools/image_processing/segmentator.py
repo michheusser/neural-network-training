@@ -1,18 +1,12 @@
 import numpy as np
 import math
-from .ImageData import ImageData
+from .datapoint import ImageData
 
 class ImageSegmentator:
     def __init__(self,imageData = None):
         self.imageData = imageData
         self.imageSegments = []
     
-    #def agglomerate(self, bufferImage, imageSegment, x, y):
-        #imageSegment.data[y][x] = bufferImage[y][x]
-        #bufferImage[y][x] = 0
-        #positions = [(-1, -1),(-1, 0),(-1, 1),(0, -1),(0, 1),(1, -1),(1, 0),(1, 1)]
-        #for position in positions:
-        #    this.agglomerate(grid, gridSegment, x + position[0], y + position[1])
     def loadImageData(self, imageData):
         self.imageData = imageData
         return self 
