@@ -6,15 +6,17 @@ import numpy as np
 import math
 
 class ImageManipulator:
+    '''Contains the image processing methods to perform on ImageData objects'''
     def __init__(self,imageData):
         self.imageData = imageData
 
-    def limits(self):
+    def _limits(self):
+        '''Returns the limits of the smalles possible rectangle with filled pixels 
+        within the image'''
         xMin = xMax = yMin = yMax = None
         for y in range(0,self.imageData.data.shape[0]):
             for x in range(0,self.imageData.data.shape[1]):
                 if self.imageData.data[y][x]:
-                    #print("x = " + str(x) + ", y = " + str(y) + " => " + str(self.data[y][x]))
                     xMax = x if xMax == None else (x if x>xMax else xMax)
                     yMax = y if yMax == None else (y if y>yMax else yMax)
                     xMin = x if xMin == None else (x if x<xMin else xMin)
@@ -22,9 +24,9 @@ class ImageManipulator:
         return xMin, xMax, yMin, yMax
 
     def shift(self,xOffset, yOffset):
+        '''Shifts the image for the given offset in both axes'''
         if xOffset == 0 and yOffset == 0:
             return self.imageData
-    
         newData = np.zeros(self.imageData.data.shape)
         for y in range(0,self.imageData.data.shape[0]):
             for x in range(0,self.imageData.data.shape[1]):
@@ -36,13 +38,15 @@ class ImageManipulator:
         return self.imageData
 
     def align(self):
-        xMin, xMax, yMin, yMax = self.limits()
+        '''Centers the smallest square of filled pixels within the image (canvas)'''
+        xMin, xMax, yMin, yMax = self._limits()
         xMargin = math.ceil((self.imageData.data.shape[1] - (xMax - xMin + 1)) / 2)
         yMargin = math.ceil((self.imageData.data.shape[0] - (yMax - yMin + 1)) / 2)
         self.shift(xMargin-xMin,yMargin-yMin)
         return self.imageData
   
     def crop(self,xFields, yFields, align = False):
+        '''Crops the image to the specified size starting from x=0 and y=0'''   
         newData = np.zeros((yFields,xFields))
         for y in range(0,newData.shape[0]):
             for x in range(0,newData.shape[1]):
@@ -56,20 +60,24 @@ class ImageManipulator:
         return self.imageData
   
     def addMargins(self,xMargin = 0, yMargin = 0):
+        '''Adds margins of the specified size on each edge of the image'''
         self.crop(self.imageData.data.shape[1] + 2 * xMargin, self.imageData.data.shape[0] + 2 * yMargin)
         self.shift(xMargin, yMargin)
         return self.imageData
     
     def wrap(self,xMargin = 0, yMargin = 0):
-        xMin, xMax, yMin, yMax = self.limits()
+        '''Creates an image out of the smallest rectangle of filled pixels of the image'''
+        xMin, xMax, yMin, yMax = self._limits()
         height = yMax - yMin + 1
         width = xMax - xMin + 1
         self.shift(0-xMin, 0-yMin)
         self.crop(width + 2 * xMargin, height + 2 * yMargin)
         self.shift(xMargin, yMargin)
         return self.imageData
+        ''''''
 
-    def isCorner(self,x,y,position):
+    def _isCorner(self,x,y,position):
+        '''Returns weather a pixel on a corner of pixels'''
         positionC =  [int((position[0]-position[1])/2),int((position[0]+position[1])/2)]
         positionCC = [int((position[1]+position[0])/2),int((position[1]-position[0])/2)]
         xNextC = x+positionC[1] 
@@ -84,6 +92,10 @@ class ImageManipulator:
 
 
     def scale(self,xFields,yFields,scaleStroke=False):
+        '''Scales an image to the specified dimensions, without keeping ratio.
+        If scaleStroke=False, all pixels are stretched/compressed, otherwise
+        only filled pixels are taken in consideration and spaces in between are
+        interpolated'''
         scaledData = np.zeros((yFields,xFields))
         if(scaleStroke):
             shapeX = self.imageData.data.shape[1]
@@ -103,7 +115,7 @@ class ImageManipulator:
                         for position in positions:
                             xNext = x+position[1] if 0 <= x+position[1] < self.imageData.data.shape[1] else x
                             yNext = y+position[0] if 0 <= y+position[0] < self.imageData.data.shape[0] else y
-                            if(self.imageData.data[yNext][xNext] and (not self.isCorner(x,y,position))):
+                            if(self.imageData.data[yNext][xNext] and (not self._isCorner(x,y,position))):
                                 xScaledNext = math.floor(xNext * scalingX)
                                 yScaledNext = math.floor(yNext * scalingY)
                                 tMax = max(abs(xScaledNext-xScaled),abs(yScaledNext-yScaled))
@@ -130,10 +142,11 @@ class ImageManipulator:
         self.imageData.data = scaledData
         return self.imageData
 
-    def fit(self,xFields, yFields, xMargin = 0, yMargin = 0, keepRatio = False,scaleStroke=False): 
+    def fit(self,xFields, yFields, xMargin = 0, yMargin = 0, keepRatio = False,scaleStroke=False):
+        '''Fits an image to a canvas of the specified dimensions, either keeping the ratio or not''' 
         xFieldsNetto = xFields - 2*xMargin
         yFieldsNetto = yFields - 2*yMargin
-        [xMin, xMax, yMin, yMax] = self.limits()
+        [xMin, xMax, yMin, yMax] = self._limits()
         height = yMax - yMin + 1
         width = xMax - xMin + 1
         scaleRatio = height / width
@@ -153,9 +166,12 @@ class ImageManipulator:
         return self.imageData
 
     def _round(self,x,n):
+        '''Defines a round function in the classic mathematical way'''
         return int(x*10**n + 0.5 * math.copysign(1,x))*10**(-n)
         
     def rotate(self, angle, rotateStroke = False,fit = False,roundPoints=True):
+        '''Rotates an image to an image of the same size (thus making the form smaller),
+        or without keeping it's original size, but keeping the objects original dimensions'''
         angle = angle*2*math.pi/360
         shapeX = self.imageData.data.shape[1]
         shapeY = self.imageData.data.shape[0]
@@ -190,6 +206,7 @@ class ImageManipulator:
         return self.imageData
 
     def filledPixels(self,array2D):
+        '''Calculates the amount of filled pixels within the image data'''
         counter=0
         for y in range(0,array2D.shape[0]):
             for x in range(0,array2D.shape[1]):
