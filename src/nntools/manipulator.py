@@ -5,10 +5,10 @@
 import numpy as np
 import pickle
 import json
-from .NeuralNetworkTrainer import NeuralNetworkTrainer
-from .NeuralNetworkValidator import NeuralNetworkValidator
-from .NeuralNetworkClassifier import NeuralNetworkClassifier
-from .NeuralNetwork import NeuralNetwork
+from .tools.trainer import NeuralNetworkTrainer
+from .tools.validator import NeuralNetworkValidator
+from .tools.classifier import NeuralNetworkClassifier
+from .tools.neural_network import NeuralNetwork
 
 class NeuralNetworkManipulator:
   def __init__(self, neuralNetwork = None):
