@@ -55,6 +55,11 @@ neural-network-training/src/main_neural_network_training.py
 │      └── trainer.py                    # Module containing the object to train a natural network on a dataset
 │
 ├── main_dataset_creation.py             # Script containing steps for the creation of data
-└── main_neural_network_training.py      # Script containing steps for the training of a neural network
+├── main_neural_network_training.py      # Script containing steps for the training of a neural network
+│
+└── Saved Networks                       # Main folder for saved trained neural networks
+    ├── Current                          # Default folder where a neural network is saved (see main_neural_network_training.py)
+    ├── Best                             # Manually saved files for neural network with best validation reults 
+    └── ...                              # Further saved networks
 ```
 
