@@ -81,12 +81,22 @@ class NeuralNetworkManipulator:
     print("Training information saved to" + destinationPath)
     return self
 
-  def numpyToList(self,numpyArray):
-    ''''''
-    pass
+  def _numpyToList(self,numpyList):
+    '''Converts a list of numpy arrays to a list of nested lists'''
+    nestedList = []
+    for numpyArray in numpyList:
+      if numpyArray is None:
+        nestedList.append('Null')
+      else:
+        nestedList.append(numpyArray.tolist())
+    return nestedList
 
-  def exportToJSON(self,destinationPath):
-    print("Exporting neural network to JSON")
+  def exportNetworkToJSON(self,destinationPath):
+    '''Exports weights and bias of neural network to JSON file'''
+    weightsJSON = json.dumps(self._numpyToList(self.network.weights))
+    biasJSON = json.dumps(self._numpyToList(self.network.bias))
+    open(destinationPath +"/weights.json","w").write(weightsJSON)
+    open(destinationPath +"/bias.json","w").write(biasJSON)
 
 
 

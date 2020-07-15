@@ -8,7 +8,10 @@ from nntools.manipulator import NeuralNetworkManipulator
 trainingSetPath = "/Users/michelsmacbookpro/Desktop/Projects/Symbol Images/CompleteDataSet_training.npy"
 validationSetPath = "/Users/michelsmacbookpro/Desktop/Projects/Symbol Images/CompleteDataSet_validation.npy"
 testingSetPath = "/Users/michelsmacbookpro/Desktop/Projects/Symbol Images/CompleteDataSet_testing.npy"
+
+#EXPORTING PATHS
 neuralNetworkFile = "/Users/michelsmacbookpro/Desktop/Projects/neural-network-training/src/Saved Networks/Current"
+fileJSON = "/Users/michelsmacbookpro/Desktop/Projects/neural-network-training/src/Saved Networks/JSON"
 
 # TRAINING PARAMETERS
 outputMap = '0123456789+-*%[]'
@@ -23,3 +26,4 @@ neuralNetwork = NeuralNetworkManipulator().create(layers, outputMap,learningType
 #neuralNetwork = NeuralNetworkManipulator().importFiles(neuralNetworkFile,learningType[a][0]) # Run when training cycles have already happened
 neuralNetwork.manipulator.train(trainingDataPath=trainingSetPath, epochs=10, miniBatchSize=20,eta=eta, validationDataPath=validationSetPath,func=learningType[a][1], calculateCost=True, gamma=gamma)
 neuralNetwork.manipulator.exportFiles(neuralNetworkFile)
+neuralNetwork.manipulator.exportNetworkToJSON(fileJSON)
