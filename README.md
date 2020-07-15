@@ -62,7 +62,7 @@ neural-network-training/src/main_neural_network_training.py
     ├── Best                             # Manually saved files for neural network with best validation reults 
     └── ...                              # Further saved networks
 ```
-## Current Project Results
+## Project Results
 Upon creating the dataset mentioned above, using the tools of this project, I proceeded to train a neural network with the following parameters:
 
 ### Neural Network
@@ -85,6 +85,13 @@ Upon creating the dataset mentioned above, using the tools of this project, I pr
 The neural network achieved an accuracy of **96%**, with the accuracy of some symbols achieving up to **99%** accuracy and the lowest ones around **92%**. The reason for the relatively lower accuracy on some symbols was the ambiguity of some transformed signs that resemble each other ('1', '/', ']'). Further training proved to be unsuccessful in improving the accuracy. 
 
 In higher epochs, decreasing of the learning rate helped to help to converge to a more accurate minimum of the cost function up until around 0.02 where it proved to be too small to create any change (even with the removal of regularization).
+
+![alt text](https://github.com/michheusser/neural-network-training/blob/master/src/Saved%20Networks/Current/accuracy_graph.png?raw=true)
+
+Visible discontinuities in the accuracy's derivative (see graph) are due to non-continuous changes in the learning rate throughout the training phase. A further implementation for the neural network package could be the ability of adapting learning rate as a function of accuracy. This might be included in the future.
+
+
+
 
 
 
