@@ -16,8 +16,8 @@ fileJSON = "/Users/michelsmacbookpro/Desktop/Projects/neural-network-training/sr
 # TRAINING PARAMETERS
 outputMap = '0123456789+-*%[]'
 layers = (784,64,32,16)
-eta = 0.02
-gamma = 0
+eta = 5
+gamma = 0.001
 learningType = [('sigmoid','MSE'),('softmax','CE')]
 a = 0
 
