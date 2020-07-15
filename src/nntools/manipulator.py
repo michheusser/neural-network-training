@@ -11,6 +11,8 @@ from .tools.classifier import NeuralNetworkClassifier
 from .tools.neural_network import NeuralNetwork
 
 class NeuralNetworkManipulator:
+  '''Contains the high-level methods to create, train and validate a neural network as well as 
+  exporting them, and importing previously created ones'''
   def __init__(self, neuralNetwork = None):
     self.network = neuralNetwork
     self.classifier = None if self.network == None else NeuralNetworkClassifier(self.network)
@@ -18,6 +20,8 @@ class NeuralNetworkManipulator:
     self.trainer = None if self.network == None else NeuralNetworkTrainer(self.network, self.validator)
     
   def create(self, layers, outputMap, activation):
+    '''Creates a neural network object, initializates it, and appends to it a
+    classifier, validator and trainer object which contain the corresponding methods'''
     self.network = NeuralNetwork(layers = layers, value='randn', outputMap = outputMap, manipulator=self,activation=activation) 
     self.classifier = NeuralNetworkClassifier(self.network)
     self.validator = NeuralNetworkValidator(self.network)
@@ -25,20 +29,24 @@ class NeuralNetworkManipulator:
     return self.network
   
   def test(self, input):
+    '''Evaluates the neural network with a certain input list of the length of the input layer'''
     return self.classifier.evaluate(input)
   
   def train(self, trainingDataPath,epochs,miniBatchSize,eta, validationDataPath,func,calculateCost,gamma):
+    '''Trains the neural network using the training and validation datasets'''
     self.validator.loadDataFile(validationDataPath)
     self.trainer.loadDataFile(trainingDataPath)
     self.trainer.train(epochs,miniBatchSize,eta,func,calculateCost,gamma)
     return self.network
   
   def validate(self, validationDataPath):
+    '''Validates the neural network with the validation set given'''
     self.validator.loadDataFile(validationDataPath)
     return self.validator.validate()
   
   def importFiles(self,sourcePath,activation):
-    layers, outputMap, weights, bias, accuracy, costs, singleAccuracies= self.loadFiles(sourcePath)
+    '''Imports a previously trained and exported neural network'''
+    layers, outputMap, weights, bias, accuracy, costs, singleAccuracies= self._loadFiles(sourcePath)
     self.create(layers,outputMap,activation)
     self.network.weights = weights
     self.network.bias = bias
@@ -47,7 +55,8 @@ class NeuralNetworkManipulator:
     self.trainer.singleValidationAccuracies = singleAccuracies
     return self.network
 
-  def loadFiles(self,sourcePath):
+  def _loadFiles(self,sourcePath):
+    '''Loads files into the corresonding objects'''
     layers = pickle.load(open(sourcePath + "/layers.p","rb"))
     outputMap = pickle.load(open(sourcePath + "/outputMap.p","rb"))
     weights = pickle.load(open(sourcePath + "/weights.p","rb"))
@@ -58,6 +67,7 @@ class NeuralNetworkManipulator:
     return layers, outputMap, weights, bias, accuracy, costs, singleAccuracies
 
   def exportFiles(self, destinationPath):
+    '''Exports a trained neural network including its training data'''
     print("Saving neural network...")
     pickle.dump(self.network.layers, open(destinationPath + "/layers.p", 'wb'))
     pickle.dump(self.network.outputMap, open(destinationPath + "/outputMap.p", 'wb'))
@@ -72,6 +82,7 @@ class NeuralNetworkManipulator:
     return self
 
   def numpyToList(self,numpyArray):
+    ''''''
     pass
 
   def exportToJSON(self,destinationPath):

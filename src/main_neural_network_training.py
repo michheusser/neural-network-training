@@ -20,6 +20,6 @@ a = 0
 
 # NEURAL NETWORK TRAINING
 neuralNetwork = NeuralNetworkManipulator().create(layers, outputMap,learningType[a][0]) # Only run when training for the first time
-neuralNetwork = NeuralNetworkManipulator().importFiles(neuralNetworkFile,learningType[a][0]) # Run when training cycles have already happened
+#neuralNetwork = NeuralNetworkManipulator().importFiles(neuralNetworkFile,learningType[a][0]) # Run when training cycles have already happened
 neuralNetwork.manipulator.train(trainingDataPath=trainingSetPath, epochs=10, miniBatchSize=20,eta=eta, validationDataPath=validationSetPath,func=learningType[a][1], calculateCost=True, gamma=gamma)
 neuralNetwork.manipulator.exportFiles(neuralNetworkFile)

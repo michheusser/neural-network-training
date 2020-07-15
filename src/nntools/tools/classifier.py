@@ -5,17 +5,23 @@
 import numpy as np
 
 class NeuralNetworkClassifier:
+  '''Provides the tools to evaluate and obtain the output of the linked neural network with
+  a certain input'''
   def __init__(self, neuralNetwork):
     self.network = neuralNetwork
 
-  def mapVectorToOutput(self,outputVector):
-      return self.network.outputMap[np.argmax(outputVector)]
+  def _mapVectorToOutput(self,outputVector):
+    '''Returns the output symbol out of the maximum value in the output vector'''
+    return self.network.outputMap[np.argmax(outputVector)]
 
-  def vectorizeInput(self,inputData):
+  def _vectorizeInput(self,inputData):
+    '''Reshapes an input to the correct dimensions to work with the neural network'''
     return inputData.flatten().reshape((-1,1))
 
   def evaluate(self,inputData):
-    self.network.loadInput(self.vectorizeInput(inputData))
+    '''Returns the result from the classification, i.e. the symbol with the highest
+    likelyhood out of the neural network's output'''
+    self.network.loadInput(self._vectorizeInput(inputData))
     self.network.activate()
-    return self.mapVectorToOutput(self.network.getOutput())
+    return self._mapVectorToOutput(self.network.getOutput())
 
