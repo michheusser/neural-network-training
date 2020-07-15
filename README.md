@@ -62,4 +62,30 @@ neural-network-training/src/main_neural_network_training.py
     ├── Best                             # Manually saved files for neural network with best validation reults 
     └── ...                              # Further saved networks
 ```
+## Current Project Results
+Upon creating the dataset mentioned above, using the tools of this project, I proceeded to train a neural network with the following parameters:
+
+### Neural Network
+- Layer Size: 784 (input layer), 64 (inner layer), 32 (inner layer), 16 (output layer)
+- Activation Function: Sigmoid logistic function
+
+### Training
+- Algorithm: Backpropagation on Stochastic Gradient Descent
+- Cost function: Mean-squared-error (MSE)
+- Epochs: 400
+- Mini-batch size: 20
+- Regularization parameter (gamma): 0.001
+- Learning rate: Adapted starting at 5.0 ending at 0.05
+
+### Dataset:
+- Training set: ~200'000 datapoints (Randomly chosen)
+- Validation set: ~50'000 datapoints (Randomly chosen)
+- Test set: ~50'000 datapoints (Randomly chosen)
+
+The neural network achieved an accuracy of **96%**, with the accuracy of some symbols achieving up to **99%** accuracy and the lowest ones around **92%**. The reason for the relatively lower accuracy on some symbols was the ambiguity of some transformed signs that resemble each other ('1', '/', ']'). Further training proved to be unsuccessful in improving the accuracy. 
+
+In higher epochs, decreasing of the learning rate helped to help to converge to a more accurate minimum of the cost function up until around 0.02 where it proved to be too small to create any change (even with the removal of regularization).
+
+
+
 
