@@ -32,29 +32,29 @@ neural-network-training/src/main_neural_network_training.py
 ```
 
 ## Project Structure
-
 ```
 .src
-├── datatools					                # Data manipulation and image processing package
-│   ├── __init__.py					          # Initialization of package
-│   ├── dataset_processor.py		      # API module to provide high-level functionalities
-│   ├── io_datapoint.py			          # Datapoint module containing the input-output class to work with the neural network
-│   └── Image_processing			        # Image processing sub-package
-│      ├── __init__.py				        # Sub-package initialization
-│      ├── image_data.py			        # Module containing the custom image-data object
-│      ├── manipulator.py			        # Module containing object for image manipulations transformations
-│      └── segmentator.py			        # Module containing object to segment images containing several symbols
+├── datatools        # Data manipulation and image processing package
+│   ├── __init__.py        # Initialization of package
+│   ├── dataset_processor.py        # API module to provide high-level functionalities
+│   ├── io_datapoint.py        # Datapoint module containing the input-output class to work with the neural network
+│   └── Image_processing        # Image processing sub-package
+│      ├── __init__.py        # Sub-package initialization
+│      ├── image_data.py        # Module containing the custom image-data object
+│      ├── manipulator.py        # Module containing object for image manipulations transformations
+│      └── segmentator.py        # Module containing object to segment images containing several symbols
 │
-├── nntools                 				  # Neural Network Training package
-│   ├── __init__.py					          # Initialization of package
-│   ├── manipulator.py				        # API module to provide high-level functionalities 
-│   └── tools						              # Sub-package with specific modules
-│      ├── __init__.py				        # Initialization of sub-package
-│      ├── neural_network.py			    # Module containing the neural-network class
-│      ├── classifier.py				      # Module containing the object to classify outputs on a neural network
-│      ├── validator.py				        # Module containing the object to validate a neural network on a dataset
-│      └── trainer.py				          # Module containing the object to train a natural network on a dataset
+├── nntools        # Neural Network Training package
+│   ├── __init__.py        # Initialization of package
+│   ├── manipulator.py        # API module to provide high-level functionalities 
+│   └── tools        # Sub-package with specific modules
+│      ├── __init__.py        # Initialization of sub-package
+│      ├── neural_network.py        # Module containing the neural-network class
+│      ├── classifier.py        # Module containing the object to classify outputs on a neural network
+│      ├── validator.py        # Module containing the object to validate a neural network on a dataset
+│      └── trainer.py        # Module containing the object to train a natural network on a dataset
 │
-├── main_dataset_creation.py    	    # Script containing steps for the creation of data
-└── main_neural_network_training.py   # Script containing steps for the training of a neural network
+├── main_dataset_creation.py        # Script containing steps for the creation of data
+└── main_neural_network_training.py        # Script containing steps for the training of a neural network
 ```
+
