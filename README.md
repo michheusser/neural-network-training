@@ -86,6 +86,6 @@ The neural network achieved an accuracy of **96%**, with the accuracy of some sy
 
 In higher epochs, decreasing of the learning rate helped to help to converge to a more accurate minimum of the cost function up until around 0.02 where it proved to be too small to create any change (even with the removal of regularization).
 
-![alt text](https://github.com/michheusser/neural-network-training/blob/master/src/Saved%20Networks/Current/accuracy_graph.png?raw=true)
+![alt text](https://github.com/michheusser/neural-network-training/blob/master/src/Saved%20Networks/Current/accuracy_graph.png?raw=true) 
 
 Visible discontinuities in the accuracy's derivative (see graph) are due to non-continuous changes in the learning rate throughout the training phase. A further implementation for the neural network package could be the ability of adapting learning rate as a function of accuracy. This might be included in the future.
