@@ -26,6 +26,11 @@ This package offers the tools to create, train, validate and test a simple feedf
 
 The main module is the ‘manipulator’ which provides a user-friendly API to create and train a neural network, using back-propagation to apply the stochastic gradient descent on the cost function. The cost function can be chosen to be mean-squared-error or cross-entropy with an included regularization parameter to help with overfitting.
 
+The package can be found in the following path:
+```
+neural-network-training/src/nntools
+```
+
 An example of the usage and API of this package can be found in the following file
 ```
 neural-network-training/src/main_neural_network_training.py
